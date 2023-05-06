@@ -38,13 +38,18 @@ export function toBaseCheckSettings<TSpec extends SpecType>({settings}: {setting
       transformedSettings[`${regionType}Regions`] = transformedSettings[`${regionType}Regions`]?.flatMap(reference => {
         const {region, ...options} = utils.types.has(reference, 'region') ? reference : {region: reference}
         if (isRegion(region)) return reference
-        const {selector, regions} = calculatedRegions.shift()!
+        const regionsWithSelectors = calculatedRegions.shift();
+        if (!regionsWithSelectors) {
+            // calculatedRegions is empty, so we cannot shift an element from it
+            return null;
+        }
+        const { selector, regions } = regionsWithSelectors;
         return regions.map(region => ({
           region,
           regionId: utils.types.isString(selector) ? selector : selector?.selector,
           ...options,
         }))
-      })
+      }).filter(Boolean); // filter out null elements
     })
     return transformedSettings as BaseCheckSettings
   }
