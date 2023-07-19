@@ -4,7 +4,8 @@ const spec = require('../../dist/browser/spec-driver')
 const Refer = require('./refer')
 const Socket = require('./socket')
 const {socketCommands} = require('./socketCommands')
-const {TestResultsSummary} = require('@applitools/eyes-api')
+const {TestResultsSummaryData: TestResultsSummary} = require('@applitools/eyes/dist/output/TestResultsSummary')
+const {TestResultsData} = require('@applitools/eyes/dist/output/TestResults')
 const refer = new Refer()
 const socket = new Socket()
 const throwErr = Cypress.config('failCypressOnDiff')
@@ -52,21 +53,16 @@ Cypress.Commands.add('eyesGetAllTestResults', () => {
       return
     }
 
-    const deleteTest = ({settings: {testId, batchId, secretToken}}) => {
-      const {serverUrl, proxy, apiKey} = Cypress.config('appliConfFile')
-      return socket.request('Core.deleteTest', {
-        settings: {
-          testId,
-          batchId,
-          secretToken,
-          serverUrl,
-          proxy,
-          apiKey,
-        },
-      })
-    }
     const summary = await getSummary()
-    return new TestResultsSummary({summary, deleteTest})
+    return new TestResultsSummary({summary, core: {deleteTest: options => socket.request('Core.deleteTest', options)}})
+  })
+})
+
+Cypress.Commands.add('eyesGetResults', (args = {}) => {
+  Cypress.log({name: 'Eyes: getResults'})
+  return cy.then({timeout: 86400000}, async () => {
+    const result = await socket.request('Eyes.getResults', {eyes, settings: {throwErr: args.throwErr !== false}})
+    return new TestResultsData({result, core: {deleteTest: options => socket.request('Core.deleteTest', options)}})
   })
 })
 

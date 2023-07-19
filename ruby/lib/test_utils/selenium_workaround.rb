@@ -7,7 +7,7 @@ RSpec.shared_context 'selenium workaround' do
   include Applitools::TestUtils::ObtainActualAppOutput
   before(:all) do
     @tests_to_skip = Applitools::TestUtils::PendingTestsList.test_list
-    OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+    OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE unless defined?(OpenSSL::SSL::VERIFY_PEER)
 
     # Applitools::EyesLogger.log_handler = Logger.new(STDOUT)
     @runner = if self.class.metadata[:visual_grid]
@@ -42,13 +42,19 @@ RSpec.shared_context 'selenium workaround' do
         end
       end
       example.run
-      if eyes.open?
-        if @actual_app_output_check.empty?
-          eyes.close_async
-        else
-          @eyes_test_result = eyes.close
-          @actual_app_output_check.each do |check|
-            check.perform
+      if eyes.respond_to? :close_async
+        eyes.close_async
+      elsif eyes.respond_to? :close
+        eyes.close
+      else
+        if eyes.open?
+          if @actual_app_output_check.empty?
+            eyes.close_async
+          else
+            @eyes_test_result = eyes.close
+            @actual_app_output_check.each do |check|
+              check.perform
+            end
           end
         end
       end

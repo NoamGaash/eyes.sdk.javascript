@@ -40,10 +40,19 @@ export interface Options {
    */
   proxy?: Proxy | ((url: URL) => Proxy | undefined)
   /**
-   * Connection timeout in ms
-   * @example 7000
+   * Whether to apply dns caching for the request
    */
-  timeout?: number
+  useDnsCache?: boolean
+  /**
+   * Total timeout to wait across all requests before aborting the connection (in ms)
+   * @example 90000
+   */
+  connectionTimeout?: number
+  /**
+   * Timeout to wait on a single request before aborting and retrying it (in ms)
+   * @example 30000
+   */
+  requestTimeout?: number
   /**
    * Retry settings for the request. If specified as an array the retries are applied in the order
    * @see Retry

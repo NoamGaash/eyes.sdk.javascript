@@ -1,0 +1,20 @@
+name: JS Publish
+description: Publish JS package
+inputs:
+  working-directory:
+    description: the path to the directory from repository root
+    type: string
+    required: true
+  shell:
+    description: shell to use
+    type: string
+    default: bash
+
+runs:
+  using: composite
+  steps:
+    - name: Publish
+      working-directory: ${{inputs.working-directory}}
+      shell: ${{inputs.shell}}
+      run: |
+        yarn npm publish

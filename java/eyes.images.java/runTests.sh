@@ -3,13 +3,10 @@
 # Abort on Error
 set -e;
 
+export APPLITOOLS_LOG_DIR="./reports/logs/";
+
+# remove the DISPLAY variable
+unset DISPLAY
+
 # Run module tests
 mvn test -e -X;
-
-# Send module report
-if [ -d "$BUILD_DIR/report" ]; then
-  chmod +x ./../sendTestResults.sh;
-  sh ./../sendTestResults.sh;
-else
-  echo "Module report was not created. $BUILD_DIR/report doesn't exist"
-fi

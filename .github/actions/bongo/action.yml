@@ -1,0 +1,55 @@
+name: Bongo
+description: Bongo's quality server integration
+inputs:
+  working-directory:
+    description: the path to the directory from repository root
+    type: string
+    required: true
+  command:
+    description: command to execute (report or notification)
+    type: string
+    required: true
+  name:
+    description: name of the reported entity
+    type: string
+    required: true
+  group:
+    description: group of the reported entity
+    type: string
+  release-version:
+    description: released version of the notification entity
+    type: string
+  params:
+    description: additional parameters will be added to every reported test
+    type: string
+  report-id:
+    description: id of the target report
+    type: string
+  result-path:
+    description: path to the test results directory
+    type: string
+  meta-path:
+    description: path to the test metadata directory
+    type: string
+  shell:
+    description: shell to use
+    type: string
+    default: bash
+
+runs:
+  using: composite
+  steps:
+    - name: Sending report
+      if: ${{inputs.command == 'report'}}
+      working-directory: ${{inputs.working-directory}}
+      shell: ${{inputs.shell}}
+      run: |
+        PARAMS=$(echo '${{inputs.params}}' |  tr '\n' ' ')
+        npx --package=@applitools/bongo@latest --yes -- bongo report --report-id="${{inputs.report-id || '$REPORT_ID'}}" --name="${{inputs.name}}" --group="${{inputs.group}}" --params="$PARAMS" --result-path="${{inputs.result-path || '$RESULT_PATH'}}" --meta-path="${{inputs.meta-path || '$META_PATH'}}"
+    - name: Sending notification
+      if: ${{inputs.command == 'notification'}}
+      working-directory: ${{inputs.working-directory}}
+      shell: ${{inputs.shell}}
+      run: |
+        npx --package=@applitools/bongo@latest --yes -- bongo send-release-notification --report-id="${{inputs.report-id || '$REPORT_ID'}}" --name="${{inputs.name}}" --release-version="${{inputs.release-version}}"
+

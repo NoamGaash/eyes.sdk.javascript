@@ -31,6 +31,7 @@ public class CheckSettingsDto {
   private Boolean ignoreDisplacements;
   private NormalizationDto normalization;
   private DebugScreenshotHandlerDto debugImages;
+  private String screenshotMode; // "default" | "applitools-lib"
 
   // check
   private String name;
@@ -49,7 +50,7 @@ public class CheckSettingsDto {
   private Boolean enablePatterns;
   private Boolean ignoreCaret;
   private Map<String, Object> ufgOptions;
-  private Object layoutBreakpoints;
+  private LayoutBreakpointsDto layoutBreakpoints;
   private Boolean disableBrowserFetching;
   private AutProxyDto autProxy;
   private Map<String, String> hooks;
@@ -295,11 +296,11 @@ public class CheckSettingsDto {
     this.ufgOptions = ufgOptions;
   }
 
-  public Object getLayoutBreakpoints() {
+  public LayoutBreakpointsDto getLayoutBreakpoints() {
     return layoutBreakpoints;
   }
 
-  public void setLayoutBreakpoints(Object layoutBreakpoints) {
+  public void setLayoutBreakpoints(LayoutBreakpointsDto layoutBreakpoints) {
     this.layoutBreakpoints = layoutBreakpoints;
   }
 
@@ -363,5 +364,13 @@ public class CheckSettingsDto {
   @JsonIgnore
   public String getType() {
     return type;
+  }
+
+  public String getScreenshotMode() {
+    return screenshotMode;
+  }
+
+  public void setScreenshotMode(String screenshotMode) {
+    this.screenshotMode = screenshotMode;
   }
 }

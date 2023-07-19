@@ -6,8 +6,11 @@ export type ReqUFGConfig = {
   serverUrl: string
   accessToken: string
   proxy?: Proxy
+  useDnsCache?: boolean
   agentId?: string
   connectionTimeout?: number
+  eyesServerUrl?: string
+  eyesApiKey?: string
 }
 
 export type ReqUFGOptions = Options & {
@@ -28,7 +31,8 @@ export function makeReqUFG({config, logger}: {config: ReqUFGConfig; logger: Logg
       'User-Agent': config.agentId,
     },
     proxy: config.proxy,
-    timeout: config.connectionTimeout ?? 300000 /* 5min */,
+    useDnsCache: config.useDnsCache,
+    connectionTimeout: config.connectionTimeout ?? 300000 /* 5min */,
     retry: {
       limit: 5,
       timeout: 200,

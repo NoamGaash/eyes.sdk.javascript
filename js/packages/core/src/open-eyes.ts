@@ -28,14 +28,14 @@ export function makeOpenEyes<TSpec extends SpecType, TDefaultType extends 'class
   core,
   cores,
   spec,
-  logger: defaultLogger,
+  logger: mainLogger,
 }: Options<TSpec, TDefaultType>) {
   return async function openEyes<TType extends 'classic' | 'ufg' = TDefaultType>({
     type = defaultType as unknown as TType,
     settings,
     config,
     target,
-    logger = defaultLogger,
+    logger = mainLogger,
   }: {
     type?: TType
     settings?: Partial<OpenSettings<TDefaultType> & OpenSettings<TType>>
@@ -43,6 +43,8 @@ export function makeOpenEyes<TSpec extends SpecType, TDefaultType extends 'class
     target?: DriverTarget<TSpec>
     logger?: Logger
   }): Promise<Eyes<TSpec, TType>> {
+    logger = logger.extend(mainLogger, {tags: [`eyes-${type}-${utils.general.shortid()}`]})
+
     settings = {...config?.open, ...settings} as Partial<OpenSettings<TDefaultType> & OpenSettings<TType>>
     settings.userTestId ??= `${settings.testName}--${utils.general.guid()}`
     settings.serverUrl ??= utils.general.getEnvValue('SERVER_URL') ?? 'https://eyesapi.applitools.com'
@@ -58,18 +60,10 @@ export function makeOpenEyes<TSpec extends SpecType, TDefaultType extends 'class
     settings.baselineBranchName ??= utils.general.getEnvValue('BASELINE_BRANCH')
     settings.ignoreBaseline ??= false
     settings.compareWithParentBranch ??= false
+    settings.useDnsCache ??= utils.general.getEnvValue('USE_DNS_CACHE', 'boolean')
 
     const driver =
       target && (await makeDriver({spec, driver: target, logger, customConfig: settings as OpenSettings<'classic'>}))
-    const account = await core.getAccountInfo({
-      settings: settings as OpenSettings<TDefaultType> & OpenSettings<TType>,
-      logger,
-    })
-    if (account.ecEnabled) {
-      const environment = await driver?.getEnvironment()
-      settings.properties ??= []
-      settings.properties.push({name: 'Execution Cloud', value: environment?.isEC ? 'Yes' : 'No'})
-    }
 
     core.logEvent({
       settings: {
@@ -77,6 +71,7 @@ export function makeOpenEyes<TSpec extends SpecType, TDefaultType extends 'class
         apiKey: settings.apiKey,
         proxy: settings.proxy,
         agentId: settings.agentId,
+        useDnsCache: settings.useDnsCache,
         level: 'Notice',
         event: {
           type: 'runnerStarted',

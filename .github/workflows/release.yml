@@ -1,0 +1,156 @@
+name: Release
+
+run-name: Release (${{inputs.tag || github.event.release.name}})
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        type: string
+        required: true
+  
+
+env:
+  FORCE_COLOR: 3
+  NPM_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+
+jobs:
+  setup:
+    name: Setup
+    runs-on: ubuntu-latest
+    outputs:
+      releases: ${{steps.setup.outputs.releases}}
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup
+        uses: ./.github/actions/setup
+        id: setup
+        with:
+          type: release
+          tag: ${{inputs.tag || github.event.release.tag_name}}
+
+  js-release:
+    needs: [setup]
+    if: ${{fromJSON(needs.setup.outputs.releases).js}}
+    strategy:
+      fail-fast: false
+      matrix: 
+        include: ${{fromJSON(needs.setup.outputs.releases).js}}
+    name: Release / ${{matrix.display-name}}
+    runs-on: ${{matrix.runner || 'ubuntu-latest'}}
+    env: ${{matrix.env}}
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{matrix.node-version || 'lts/*'}}
+      - name: Setup JFrog
+        if: ${{matrix.jfrog}}
+        uses: jfrog/setup-jfrog-cli@v3
+        env:
+          JF_URL: ${{matrix.jfrog.url}}
+          JF_ACCESS_TOKEN: ${{secrets.JF_ACCESS_TOKEN}}
+      - name: Restore build artifacts
+        if: ${{join(matrix.builds)}}
+        uses: ./.github/actions/storage/restore
+        with: 
+          name: ${{join(matrix.builds)}}
+          latest: true
+      - name: Semaphore
+        uses: ./.github/actions/semaphore
+        with:
+          name: js-release
+      - name: Publish to NPM
+        if: ${{matrix.npm}}
+        uses: ./.github/actions/js/publish
+        with:
+          working-directory: ${{matrix.working-directory}}
+          shell: ${{matrix.shell || 'bash'}}
+        env:
+          NPM_REGISTRY_URL: ${{matrix.npm.registry-url}}
+      - name: Update GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{inputs.tag || github.event.release.tag_name}}
+          prerelease: false
+          files: ${{join(matrix.artifacts)}}
+      - name: Upload to JFrog
+        if: ${{matrix.jfrog && matrix.artifacts}}
+        run: |
+          jf rt upload --flat '${{join(matrix.artifacts)}}' '${{matrix.jfrog.repository}}/${{matrix.package-version}}/'
+          jf rt upload --flat '${{join(matrix.artifacts)}}' '${{matrix.jfrog.repository}}/latest/'
+      - name: Sending notification
+        if: ${{matrix.notification}}
+        uses: ./.github/actions/bongo
+        with:
+          working-directory: ${{matrix.working-directory}}
+          shell: ${{matrix.shell || 'bash'}}
+          command: notification
+          report-id: ${{matrix.name}}@${{matrix.package-version}}
+          name: ${{matrix.notification.name}}
+          release-version: ${{matrix.package-version}}
+
+  java-release:
+    needs: [setup]
+    if: ${{fromJSON(needs.setup.outputs.releases).java}}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{fromJSON(needs.setup.outputs.releases).java}}
+    name: Release / ${{matrix.display-name}}
+    runs-on: ${{matrix.runner || 'ubuntu-latest'}}
+    env: ${{matrix.env}}
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+      - name: Import GPG Private Key
+        run: |
+          cat <(echo -e "${{secrets.MAVEN_GPG_PRIVATE_KEY}}") | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
+      - name: Set up Java and Release Repository
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: ${{matrix.java-version || 11}}
+          server-id: ${{matrix.profile}} # Value of the distributionManagement/repository/id field of the pom.xml
+          server-username: MAVEN_CENTRAL_USERNAME # env variable for username in deploy
+          server-password: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
+          gpg-private-key: ${{secrets.MAVEN_GPG_PRIVATE_KEY}} # Value of the GPG private key to import
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE # env variable for GPG private key passphrase
+      - name: Restore build artifacts
+        if: ${{join(matrix.builds)}}
+        uses: ./.github/actions/storage/restore
+        with:
+          name: ${{join(matrix.builds)}}
+      - name: Semaphore
+        uses: ./.github/actions/semaphore
+        with:
+          name: java-release
+      - name: Publish Java SDKs
+        if: ${{matrix.profile != 'none'}}
+        uses: ./.github/actions/java/publish
+        with:
+          working-directory: ${{matrix.working-directory}}
+          profile: ${{matrix.profile}}
+        env:
+          MAVEN_USERNAME: ${{secrets.MAVEN_CENTRAL_USERNAME}}
+          MAVEN_CENTRAL_TOKEN: ${{secrets.MAVEN_CENTRAL_TOKEN}}
+          MAVEN_GPG_PASSPHRASE: ${{secrets.MAVEN_GPG_PASSPHRASE}}
+      - name: Sending notification
+        if: ${{matrix.notification}}
+        uses: ./.github/actions/bongo
+        with:
+          working-directory: ${{matrix.working-directory}}
+          shell: ${{matrix.shell || 'bash'}}
+          command: notification
+          name: ${{matrix.notification.name}}
+          report-id: ${{matrix.name}}@${{matrix.package-version}}

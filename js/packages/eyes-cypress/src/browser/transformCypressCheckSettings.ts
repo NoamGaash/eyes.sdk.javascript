@@ -26,7 +26,11 @@ export function transformCypressCheckSettings(settings: CypressCheckSettings, re
     renderers: transformBrowsers(settings.browser),
     hooks: settings.scriptHooks,
     disableBrowserFetching: settings.disableBrowserFetching,
-    layoutBreakpoints: settings.layoutBreakpoints,
+    layoutBreakpoints: settings.layoutBreakpoints
+      ? utils.types.has(settings.layoutBreakpoints, 'breakpoints')
+        ? settings.layoutBreakpoints
+        : {breakpoints: settings.layoutBreakpoints}
+      : undefined,
     ufgOptions: settings.visualGridOptions,
     name: settings.tag,
     ignoreRegions: transformRegionsWithOptions(settings.ignore),
@@ -228,6 +232,15 @@ export function transformCypressCheckSettings(settings: CypressCheckSettings, re
           const currRegion = {region: region.selector, ...region}
           delete currRegion.selector
           resRegions.push(currRegion)
+        } else if (utils.types.has(region, 'left') && utils.types.has(region, 'top')) {
+          resRegions.push({
+            region: {
+              y: region.top,
+              x: region.left,
+              width: region.width,
+              height: region.height,
+            },
+          })
         } else {
           resRegions.push(region)
         }

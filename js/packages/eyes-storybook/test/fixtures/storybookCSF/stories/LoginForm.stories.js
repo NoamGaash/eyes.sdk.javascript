@@ -2,13 +2,14 @@ import React from 'react';
 import { within, userEvent } from '@storybook/testing-library';
 
 import { LoginForm } from './LoginForm';
+import {Theme} from './Theme';
 
 // Function to emulate pausing between interactions
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 const clickSubmitDelay = 1000;
-const sbVersion = process.env.STORYBOOK_VERSION || 'latest';
+const sbVersion = process.env.APPLITOOLS_FRAMEWORK_VERSION || 'latest';
 const isInteractionsCompetiable = sbVersion === 'latest' || sbVersion === 'next' || (parseFloat(sbVersion) >= 6.4);
 const exports = {
   title: 'Examples/Login',
@@ -25,6 +26,8 @@ export default exports
 const Template = (args) => <LoginForm {...args} />;
 export const EmptyForm = Template.bind({});
 export const FilledForm = Template.bind({});
+const themeTemplate = (args) => <Theme {...args} />;
+export const MyTheme =  themeTemplate.bind({});
 if (isInteractionsCompetiable){
   FilledForm.play = async ({ canvasElement }) => {
     // Starts querying the component from its root element

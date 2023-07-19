@@ -12,6 +12,123 @@
 
 
 
+## [3.34.1](https://github.com/applitools/eyes.sdk.javascript1/compare/js/eyes-cypress@3.34.0...js/eyes-cypress@3.34.1) (2023-07-05)
+
+
+### Dependencies
+
+* @applitools/core bumped from 3.4.0 to 3.5.0
+  #### Features
+
+  * added auto applitools lib detection ([#1707](https://github.com/applitools/eyes.sdk.javascript1/issues/1707)) ([7d439b5](https://github.com/applitools/eyes.sdk.javascript1/commit/7d439b52af55f3b0596c9d35d6ba85c717448023))
+  * support dns caching ([#1680](https://github.com/applitools/eyes.sdk.javascript1/issues/1680)) ([9bbff34](https://github.com/applitools/eyes.sdk.javascript1/commit/9bbff34f50c9d18758b55a6bcb45571ca1148180))
+
+
+  #### Bug Fixes
+
+  * some fix ([660a137](https://github.com/applitools/eyes.sdk.javascript1/commit/660a1376a49dd28f8f399690502cd3d1f77665fa))
+
+
+
+* @applitools/core-base bumped from 1.2.1 to 1.3.0
+  #### Features
+
+  * support dns caching ([#1680](https://github.com/applitools/eyes.sdk.javascript1/issues/1680)) ([9bbff34](https://github.com/applitools/eyes.sdk.javascript1/commit/9bbff34f50c9d18758b55a6bcb45571ca1148180))
+
+
+
+* @applitools/req bumped from 1.3.3 to 1.4.0
+  #### Features
+
+  * support dns caching ([#1680](https://github.com/applitools/eyes.sdk.javascript1/issues/1680)) ([9bbff34](https://github.com/applitools/eyes.sdk.javascript1/commit/9bbff34f50c9d18758b55a6bcb45571ca1148180))
+* @applitools/driver bumped from 1.12.4 to 1.13.0
+  #### Features
+
+  * added auto applitools lib detection ([#1707](https://github.com/applitools/eyes.sdk.javascript1/issues/1707)) ([7d439b5](https://github.com/applitools/eyes.sdk.javascript1/commit/7d439b52af55f3b0596c9d35d6ba85c717448023))
+* @applitools/ec-client bumped from 1.5.0 to 1.6.0
+  #### Features
+
+  * added support of regional execution cloud servers ([#1711](https://github.com/applitools/eyes.sdk.javascript1/issues/1711)) ([2e26c69](https://github.com/applitools/eyes.sdk.javascript1/commit/2e26c6944bb15f6121fb37c1dba95aba162c1f6a))
+  * support dns caching ([#1680](https://github.com/applitools/eyes.sdk.javascript1/issues/1680)) ([9bbff34](https://github.com/applitools/eyes.sdk.javascript1/commit/9bbff34f50c9d18758b55a6bcb45571ca1148180))
+
+
+  #### Bug Fixes
+
+  * fixed auto tunnel cleanup after unexpected end of the process ([3c1ad08](https://github.com/applitools/eyes.sdk.javascript1/commit/3c1ad0837d2d3560becc6d89370aa878becb3270))
+
+
+
+* @applitools/tunnel-client bumped from 0.1.1 to 1.0.0
+  #### Features
+
+  * added binaries and made them available in jfrog ([92033fe](https://github.com/applitools/eyes.sdk.javascript1/commit/92033fed7edc58bbc4a4e37269068418fe3afc3d))
+  * release as 1.0.0 ([93bf312](https://github.com/applitools/eyes.sdk.javascript1/commit/93bf31205b07d19bc2cb4f50b974c7bad0f49cea))
+
+
+
+* @applitools/ufg-client bumped from 1.2.22 to 1.3.0
+  #### Features
+
+  * support dns caching ([#1680](https://github.com/applitools/eyes.sdk.javascript1/issues/1680)) ([9bbff34](https://github.com/applitools/eyes.sdk.javascript1/commit/9bbff34f50c9d18758b55a6bcb45571ca1148180))
+
+
+
+* @applitools/eyes bumped from 1.5.0 to 1.5.1
+  #### Bug Fixes
+
+  * fixed issue with getResults log appearing in console when file handler configured ([56b75c2](https://github.com/applitools/eyes.sdk.javascript1/commit/56b75c2185906c1581980985816a000c14000ac3))
+
+
+  #### Reverts
+
+  * revert removal of `nmgOptions` api ([b8d03c7](https://github.com/applitools/eyes.sdk.javascript1/commit/b8d03c77e8243397ecca233e46d56f7437d16df4))
+
+
+
+* @applitools/spec-driver-webdriver bumped from 1.0.36 to 1.0.37
+
+* @applitools/nml-client bumped from 1.5.0 to 1.5.1
+
+* @applitools/screenshoter bumped from 3.8.1 to 3.8.2
+
+
+## [3.34.0](https://github.com/applitools/eyes.sdk.javascript1/compare/js/eyes-cypress-v3.33.2...js/eyes-cypress@3.34.0) (2023-07-01)
+
+
+### Features
+
+* add getResults api ([d92ea94](https://github.com/applitools/eyes.sdk.javascript1/commit/d92ea9434f6758bf38214648a0543c8d683ecc6e))
+* add getResults api to Cypress ([#1663](https://github.com/applitools/eyes.sdk.javascript1/issues/1663)) ([b522222](https://github.com/applitools/eyes.sdk.javascript1/commit/b522222038f33c69191e534cca0f87622188f63b))
+* handled abandoned tunnels ([#1669](https://github.com/applitools/eyes.sdk.javascript1/issues/1669)) ([e01a9f6](https://github.com/applitools/eyes.sdk.javascript1/commit/e01a9f6f7543fc5e6bd842acf6ee8de8cfb49998))
+
+
+### Bug Fixes
+
+* some fix ([8aca690](https://github.com/applitools/eyes.sdk.javascript1/commit/8aca690a75963cf2641242e0128d30c9794c6263))
+* use new delete test implementation ([d819ad0](https://github.com/applitools/eyes.sdk.javascript1/commit/d819ad05387175a86f1a18009f81c1854a7c7a21))
+
+## 3.33.1 - 2023/5/31
+
+### Features
+### Bug fixes
+- Increase timeout for rendering results polling
+- Fixed issue when logs are not show up
+
+## 3.33.0 - 2023/5/23
+
+### Features
+- Add support for reloading the page when using layoutBreakpoints
+- Internal improvements
+- Start universal core in the plugin process
+### Bug fixes
+
+## 3.32.2 - 2023/5/3
+
+### Features
+### Bug fixes
+- Update internal dependencies
+- Fix coded regions by coordinates
+
 ## 3.32.1 - 2023/4/24
 
 ### Features

@@ -1,5 +1,5 @@
+import {type Logger} from '@applitools/logger'
 import globalReq, {makeReq, type Req, type Options, type Proxy, type Hooks, type Fetch} from '@applitools/req'
-import {Logger} from '@applitools/logger'
 import * as utils from '@applitools/utils'
 
 export type ReqEyesConfig = {
@@ -9,6 +9,7 @@ export type ReqEyesConfig = {
   agentId?: string
   connectionTimeout?: number
   removeSession?: boolean
+  useDnsCache?: boolean
 }
 
 export type ReqEyesOptions = Options & {
@@ -30,7 +31,8 @@ export function makeReqEyes({config, fetch, logger}: {config: ReqEyesConfig; fet
       'User-Agent': config.agentId,
     },
     proxy: config.proxy,
-    timeout: config.connectionTimeout ?? 300000 /* 5min */,
+    useDnsCache: config.useDnsCache,
+    connectionTimeout: config.connectionTimeout ?? 300000 /* 5min */,
     retry: [
       // retry on network issues
       {

@@ -9,20 +9,20 @@ export type ProxyServerOptions = {
   logger?: Logger
 }
 
-export async function makeProxyServer({agentId = 'TestProxy', logger}: ProxyServerOptions = {}) {
-  logger = logger?.extend({label: 'proxy-server'}) ?? makeLogger({label: 'proxy-server'})
+export async function makeProxyServer({agentId = 'TestProxy', logger: defaultLogger}: ProxyServerOptions = {}) {
+  const logger = makeLogger({logger: defaultLogger, format: {label: 'proxy-server'}})
 
   const proxyServer = await makeServer()
 
   proxyServer.on('request', (request, response) => {
-    const proxyRequest = https.request(request.url, {
+    const proxyRequest = https.request(request.url!, {
       method: request.method,
       headers: {...request.headers, 'x-proxy-agent': agentId},
       rejectUnauthorized: false,
     })
 
     proxyRequest.on('response', proxyResponse => {
-      response.writeHead(proxyResponse.statusCode, proxyResponse.headers)
+      response.writeHead(proxyResponse.statusCode!, proxyResponse.headers)
       proxyResponse.pipe(response)
     })
 
@@ -63,7 +63,7 @@ export async function makeProxyServer({agentId = 'TestProxy', logger}: ProxyServ
     })
 
     proxyRequest.on('response', proxyResponse => {
-      response.writeHead(proxyResponse.statusCode, proxyResponse.headers)
+      response.writeHead(proxyResponse.statusCode!, proxyResponse.headers)
       proxyResponse.pipe(response)
     })
 
@@ -87,8 +87,7 @@ export async function makeProxyServer({agentId = 'TestProxy', logger}: ProxyServ
 async function makeServer<TOptions extends Record<string, any>>(
   options?: TOptions,
 ): Promise<TOptions extends https.ServerOptions ? https.Server : http.Server> {
-  const secure = Boolean(options?.cert && options?.key)
-  const server = secure ? https.createServer(options) : http.createServer()
+  const server = options?.cert && options?.key ? https.createServer(options) : http.createServer()
 
   return new Promise((resolve, reject) => {
     server.listen(0)

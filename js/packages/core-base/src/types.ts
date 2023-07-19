@@ -112,6 +112,7 @@ export interface ServerSettings {
   apiKey: string
   agentId?: string
   proxy?: Proxy
+  useDnsCache?: boolean
 }
 
 export interface UFGServerSettings {
@@ -121,9 +122,10 @@ export interface UFGServerSettings {
   accessToken: string
   agentId?: string
   proxy?: Proxy
+  useDnsCache?: boolean
 }
 
-type CustomProperty = {name: string; value: string}
+export type CustomProperty = {name: string; value: string}
 export type Batch = {
   id?: string
   name?: string
@@ -181,7 +183,7 @@ export interface LocateSettings<TLocator extends string, TRegion = Region>
   locatorNames: TLocator[]
   firstOnly?: boolean
   /** @internal */
-  userLocateId?: string
+  userCommandId?: string
 }
 
 export type LocateResult<TLocator extends string> = Record<TLocator, Region[]>

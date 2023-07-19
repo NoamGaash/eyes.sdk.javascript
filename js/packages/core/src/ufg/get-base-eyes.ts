@@ -1,8 +1,7 @@
-import type {Eyes, OpenSettings} from './types'
+import type {Eyes, GetBaseEyesSettings, OpenSettings} from './types'
 import type {Eyes as BaseEyes} from '@applitools/core-base'
 import {type SpecType} from '@applitools/driver'
 import {type Logger} from '@applitools/logger'
-import {type RendererSettings} from '@applitools/ufg-client'
 import * as utils from '@applitools/utils'
 
 type Options<TSpec extends SpecType> = {
@@ -16,7 +15,7 @@ export function makeGetBaseEyes<TSpec extends SpecType>({
   settings: defaultSettings,
   eyes,
   base,
-  logger: defaultLogger,
+  logger: mainLogger,
 }: Options<TSpec>) {
   const getBaseEyesWithCache = utils.general.cachify(getBaseEyes, ([options]) => options?.settings)
   if (base) {
@@ -28,20 +27,26 @@ export function makeGetBaseEyes<TSpec extends SpecType>({
 
   async function getBaseEyes({
     settings,
-    logger = defaultLogger,
+    logger = mainLogger,
   }: {
-    settings?: RendererSettings
+    settings?: GetBaseEyesSettings
     logger?: Logger
   } = {}): Promise<BaseEyes[]> {
+    logger = logger.extend(mainLogger)
+
     logger.log(`Command "getBaseEyes" is called with settings`, settings)
     if (!settings) throw new Error('')
     const ufgClient = await eyes.core.getUFGClient({
       config: {...eyes.test.ufgServer},
       logger,
     })
-    const environment = await ufgClient.bookRenderer({settings})
+    const environment = await ufgClient.bookRenderer({settings, logger})
+    let properties
+    if (defaultSettings.properties || settings.properties) {
+      properties = (defaultSettings.properties ?? []).concat(settings.properties ?? [])
+    }
     const baseEyes = await eyes.core.base.openEyes({
-      settings: {...defaultSettings, environment: {...defaultSettings.environment, ...environment}},
+      settings: {...defaultSettings, environment: {...defaultSettings.environment, ...environment}, properties},
       logger,
     })
     return [baseEyes]

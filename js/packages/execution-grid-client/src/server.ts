@@ -1,7 +1,7 @@
 import type {ECClient, ECClientSettings, ECSession} from './types'
 import {type AddressInfo} from 'net'
 import {createServer} from 'http'
-import {makeLogger, type Logger} from '@applitools/logger'
+import {type Logger} from '@applitools/logger'
 import {makeCore} from '@applitools/core-base'
 import {makeCallback} from './utils/router'
 import {makeTunnelManager} from './tunnels/manager'
@@ -13,10 +13,15 @@ import {makeEndSession} from './commands/end-session'
 import {makeFindElement} from './commands/find-element'
 import * as utils from '@applitools/utils'
 
-export async function makeServer({settings, logger}: {settings: ECClientSettings; logger?: Logger}): Promise<ECClient> {
-  const serverLogger = logger ? logger.extend({label: 'ec-client'}) : makeLogger({label: 'ec-client', colors: true})
+export async function makeServer({
+  settings,
+  logger: mainLogger,
+}: {
+  settings: ECClientSettings
+  logger: Logger
+}): Promise<ECClient> {
+  const serverLogger = mainLogger.extend()
   const req = makeReqProxy({
-    targetUrl: settings.serverUrl,
     proxy: settings.proxy,
     retry: {
       validate: async ({response, error}) => {
@@ -27,9 +32,10 @@ export async function makeServer({settings, logger}: {settings: ECClientSettings
       limit: 10,
       timeout: 5000,
     },
+    useDnsCache: settings.useDnsCache,
   })
   const core = makeCore({agentId: `js/ec-client/${require('../package.json').version}`})
-  const tunnels = settings.tunnel?.serverUrl
+  const tunnels = settings.tunnel?.serviceUrl
     ? await makeTunnelManager({settings: settings.tunnel, logger: serverLogger})
     : await makeTunnelManagerClient({settings: settings.tunnel})
   const sessions = new Map<string, ECSession>()
@@ -43,9 +49,8 @@ export async function makeServer({settings, logger}: {settings: ECClientSettings
 
   const server = createServer(
     makeCallback(({router, request, response}) => {
-      const requestLogger = serverLogger.extend({
-        tags: {request: `[${request.method}] ${request.url}`, requestId: utils.general.guid()},
-      })
+      const requestLogger = serverLogger.extend({tags: [`proxy-request-${utils.general.shortid()}`]})
+      requestLogger.log(`Received request [${request.method}] ${request.url}`)
 
       router.post('/session', async () => {
         const session = await commands.startSession({request, response, logger: requestLogger})
@@ -64,9 +69,13 @@ export async function makeServer({settings, logger}: {settings: ECClientSettings
         await commands.endSession({session, request, response, logger: requestLogger})
         sessions.delete(session.sessionId)
       })
-      router.any(async () => {
+      router.any(/^\/session\/(?<sessionId>[^\/]+).*$/, async ({match}) => {
         requestLogger.log('Passthrough request')
-        await req(request.url!, {io: {request, response}, logger: requestLogger})
+        const session = sessions.get(match.groups!.sessionId)!
+        await req(request.url!, {baseUrl: session.serverUrl, io: {request, response}, logger: requestLogger})
+      })
+      router.fallback(async () => {
+        throw new Error('Unknown request')
       })
       router.catch(async ({error}) => {
         requestLogger.error(`Error during processing request`, error)

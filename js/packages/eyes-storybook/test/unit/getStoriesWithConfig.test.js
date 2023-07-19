@@ -41,6 +41,7 @@ describe('getStoriesWithConfig', () => {
       waitBeforeCapture: 1000,
       batchName: 'this is an example',
       renderers: [{name: 'chrome', width: 800, height: 600}],
+      properties: [],
       storyConfiguration: {
         stories: ({kind}) => {
           return kind === 'Button';
@@ -111,10 +112,11 @@ describe('getStoriesWithConfig', () => {
 
     const expectedSubConfig2 = {
       renderers: [{name: 'chrome', width: 1000, height: 800}],
-      layoutBreakpoints: true,
+      layoutBreakpoints: {breakpoints: true},
     };
 
     const config = {
+      properties: [],
       matchLevel: 'layout',
       waitBeforeCapture: 1000,
       batchName: 'this is an example',
@@ -176,6 +178,7 @@ describe('getStoriesWithConfig', () => {
 
   it('merge multiple subsets', () => {
     const config = {
+      properties: [],
       matchLevel: 'layout',
       waitBeforeCapture: 1000,
       batchName: 'this is an example',
@@ -215,7 +218,7 @@ describe('getStoriesWithConfig', () => {
           config: {
             ...expectedConfig,
             waitBeforeCapture: 5000,
-            layoutBreakpoints: true,
+            layoutBreakpoints: {breakpoints: true},
           },
         },
         {
@@ -228,7 +231,7 @@ describe('getStoriesWithConfig', () => {
             matchLevel: 'strict',
             renderers: [{width: 400, height: 400, name: 'chrome'}],
             useDom: true,
-            layoutBreakpoints: true,
+            layoutBreakpoints: {breakpoints: true},
           },
         },
         {
@@ -264,6 +267,7 @@ describe('getStoriesWithConfig', () => {
     };
 
     const config = {
+      properties: [],
       matchLevel: 'layout',
       waitBeforeCapture: 1000,
       batchName: 'this is an example',
@@ -348,6 +352,7 @@ describe('getStoriesWithConfig', () => {
 
   it('story config method with error', async () => {
     const config = {
+      properties: [],
       matchLevel: 'layout',
       waitBeforeCapture: 1000,
       batchName: 'this is an example',
@@ -401,6 +406,7 @@ describe('getStoriesWithConfig', () => {
 
   it('empty stories subset', () => {
     const config = {
+      properties: [],
       matchLevel: 'layout',
       waitBeforeCapture: 1000,
       batchName: 'this is an example',

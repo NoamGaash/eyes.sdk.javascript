@@ -1,0 +1,23 @@
+name: Java build
+description: Build Java SDK Packages
+
+inputs:
+  working-directory:
+    description: the path to the directory from repository root
+    type: string
+    required: true
+  profile:
+    description: the Maven profile (maven, snapshot, jfrog)
+    type: string
+    default: maven
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Clean Install (skip tests)
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        chmod +x ./build.sh
+        ./build.sh ${{inputs.profile}}

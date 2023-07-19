@@ -76,6 +76,33 @@ export class Eyes<TSpec extends Core.SpecType = Core.SpecType> {
     await core.setViewportSize?.({target: driver, size})
   }
 
+  static setMobileCapabilities<TCapabilities extends Record<string, any>>(
+    capabilities: TCapabilities,
+    config?: Configuration,
+  ): TCapabilities {
+    const envs: Record<string, string> = {
+      APPLITOOLS_SERVER_URL: config?.serverUrl ?? utils.general.getEnvValue('SERVER_URL'),
+      APPLITOOLS_API_KEY: config?.apiKey ?? utils.general.getEnvValue('API_KEY'),
+    }
+    if (config?.proxy) {
+      const url = new URL(config.proxy.url)
+      if (config.proxy.username) url.username = config.proxy.username
+      if (config.proxy.password) url.password = config.proxy.password
+      envs.APPLITOOLS_PROXY_URL = url.toString()
+    }
+    return Object.assign(capabilities, {
+      'appium:optionalIntentArguments': `--es APPLITOOLS '${JSON.stringify(envs)}'`,
+      'appium:processArguments': JSON.stringify({
+        args: [],
+        env: {
+          DYLD_INSERT_LIBRARIES:
+            '@executable_path/Frameworks/Applitools_iOS.xcframework/ios-arm64/Applitools_iOS.framework/Applitools_iOS:@executable_path/Frameworks/Applitools_iOS.xcframework/ios-arm64_x86_64-simulator/Applitools_iOS.framework/Applitools_iOS',
+          ...envs,
+        },
+      }),
+    })
+  }
+
   constructor(runner?: EyesRunner, config?: Configuration<TSpec>)
   constructor(config?: Configuration<TSpec>)
   constructor(runnerOrConfig?: EyesRunner | Configuration<TSpec>, config?: Configuration<TSpec>) {
@@ -90,7 +117,7 @@ export class Eyes<TSpec extends Core.SpecType = Core.SpecType> {
       this._config = new ConfigurationData(runnerOrConfig ?? config, this._spec)
     }
 
-    this._runner.attach(this, this._core)
+    this._runner.attach(this._core)
     this._handlers.attach(this)
     this._logger = new Logger({label: 'Eyes API'})
   }
@@ -186,6 +213,10 @@ export class Eyes<TSpec extends Core.SpecType = Core.SpecType> {
 
   async getExecutionCloudUrl(): Promise<string> {
     return (this.constructor as typeof Eyes).getExecutionCloudUrl(this._config)
+  }
+
+  setMobileCapabilities<TCapabilities extends Record<string, any>>(capabilities: TCapabilities): TCapabilities {
+    return (this.constructor as typeof Eyes).setMobileCapabilities(capabilities, this._config)
   }
 
   async open(driver: TSpec['driver'], config?: Configuration<TSpec>): Promise<TSpec['driver']>
@@ -284,7 +315,7 @@ export class Eyes<TSpec extends Core.SpecType = Core.SpecType> {
     if (this._config.isDisabled) return null as never
     if (!this.isOpen) throw new EyesError('Eyes not open')
 
-    let serialized: {target?: Image; settings: any}
+    let serialized
     if (utils.types.isString(checkSettingsOrTargetOrName)) {
       serialized = this._driver
         ? new CheckSettingsAutomationFluent(checkSettings as CheckSettingsAutomationFluent<TSpec>, this._spec)
@@ -309,9 +340,13 @@ export class Eyes<TSpec extends Core.SpecType = Core.SpecType> {
     // TODO remove when major version of sdk should be released
     config.screenshot.fully ??= false
 
-    let type: 'classic' | 'ufg' | undefined
-    if (settings?.nmgOptions?.nonNMGCheck === 'addToAllDevices') {
-      type = this._runner.type === 'ufg' ? 'classic' : 'ufg'
+    let type
+    if (
+      this._runner.type === 'ufg' &&
+      (settings as CheckSettingsAutomation<TSpec>)?.nmgOptions?.nonNMGCheck === 'addToAllDevices'
+    ) {
+      type = 'classic' as const
+      settings.screenshotMode = 'default'
     }
 
     const [result] = await this._eyes!.check({type, target, settings, config})
@@ -385,14 +420,28 @@ export class Eyes<TSpec extends Core.SpecType = Core.SpecType> {
   }
 
   async locate<TLocator extends string>(
+    target: Core.ImageTarget,
     settings: VisualLocatorSettings<TLocator>,
+  ): Promise<Record<TLocator, Region[]>>
+  async locate<TLocator extends string>(settings: VisualLocatorSettings<TLocator>): Promise<Record<TLocator, Region[]>>
+  async locate<TLocator extends string>(
+    targetOrSettings: Core.ImageTarget | VisualLocatorSettings<TLocator>,
+    settings?: VisualLocatorSettings<TLocator>,
   ): Promise<Record<TLocator, Region[]>> {
     if (this._config.isDisabled) return null as never
     if (!this.isOpen) throw new EyesError('Eyes not open')
 
+    let target: Core.ImageTarget | TSpec['driver']
+    if (utils.types.has(targetOrSettings, 'locatorNames')) {
+      settings = targetOrSettings
+      target = this._driver
+    } else {
+      target = targetOrSettings
+    }
+
     const config = this._config.toJSON()
 
-    const results = await this._core.locate({target: this._driver, settings: {...this._state, ...settings}, config})
+    const results = await this._core.locate({target, settings: {...this._state, ...settings}, config})
     return Object.entries<Region[]>(results).reduce((results, [key, regions]) => {
       results[key as TLocator] = regions.map(region => new RegionData(region))
       return results
@@ -478,25 +527,15 @@ export class Eyes<TSpec extends Core.SpecType = Core.SpecType> {
   async close(throwErr = true): Promise<TestResultsData> {
     if (this._config.isDisabled) return null as never
     if (!this.isOpen) throw new EyesError('Eyes not open')
-    const deleteTest = (options: any) =>
-      this._core.deleteTest({
-        ...options,
-        settings: {
-          ...options.settings,
-          serverUrl: this._config.serverUrl,
-          apiKey: this._config.apiKey,
-          proxy: this._config.proxy,
-        },
-      })
     try {
       const config = this._config.toJSON()
 
       await this._eyes!.close({config})
       const [result] = await this._eyes!.getResults({settings: {throwErr}})
-      return new TestResultsData({result, deleteTest})
+      return new TestResultsData({result, core: this._core})
     } catch (err: any) {
       if (err.info?.result) {
-        const result = new TestResultsData({result: err.info.result, deleteTest})
+        const result = new TestResultsData({result: err.info.result, core: this._core})
         if (err.reason === 'test failed') {
           throw new TestFailedError(err.message, result)
         } else if (err.reason === 'test different') {
@@ -521,19 +560,7 @@ export class Eyes<TSpec extends Core.SpecType = Core.SpecType> {
     try {
       await this._eyes!.abort()
       const [result] = await this._eyes!.getResults()
-      return new TestResultsData({
-        result,
-        deleteTest: options =>
-          this._core.deleteTest({
-            ...options,
-            settings: {
-              ...options.settings,
-              serverUrl: this._config.serverUrl,
-              apiKey: this._config.apiKey,
-              proxy: this._config.proxy,
-            },
-          }),
-      })
+      return new TestResultsData({result, core: this._core})
     } finally {
       this._eyes = undefined
     }

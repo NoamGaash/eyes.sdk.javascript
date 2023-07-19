@@ -1,6 +1,6 @@
-import * as assert from 'assert/strict'
 import {compile} from '../utils/compile'
 import {load} from '../utils/load'
+import * as assert from 'assert/strict'
 
 describe('transformer', () => {
   it('works in the simplest scenario', () => {
@@ -55,6 +55,59 @@ describe('transformer', () => {
       },
     })
     assert.equal(output, load('parameters.d.ts'))
+  })
+
+  it('works with different kind of property names', () => {
+    const output = compile({
+      config: {rootFile: 'index.ts'},
+      input: {
+        'index.ts': `
+        export type T = {
+          regularProperty: boolean,
+          'regularStringProperty': boolean,
+          '@stringOnlyProperty': boolean,
+          ['calculatedStringProperty']: boolean,
+          ['@calculatedStringOnlyProperty']: boolean,
+          [Symbol.iterator]: boolean
+        }
+        `,
+      },
+    })
+    assert.equal(output, load('property-names.d.ts'))
+  })
+
+  it('generates synthetic overload', () => {
+    const output = compile({
+      options: {strict: true},
+      config: {rootFile: 'index.ts', generateSyntheticOverloads: true},
+      input: {
+        'index.ts': `
+        export function f(arg1: number | boolean | string, arg2?: 'a' | 'b', arg3?: boolean): Promise<void> {
+          return Promise.resolve()
+        }
+        `,
+      },
+    })
+    assert.equal(output, load('synthetic-overloads.d.ts'))
+  })
+
+  it('prevents union reduction', () => {
+    const output = compile({
+      options: {strict: true},
+      config: {rootFile: 'index.ts'},
+      input: {
+        'index.ts': `
+        export type U = \`\${1 | 2 | 3}\`
+
+        export function f(arg?: U): void {}
+        export interface I {
+          u?: U
+          y?: '1' | '2' | '3'
+        }
+        `,
+      },
+    })
+    assert.equal(output, load('union-reduction.d.ts'))
   })
 
   describe('works with default export', () => {

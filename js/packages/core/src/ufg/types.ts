@@ -1,7 +1,7 @@
 import type {MaybeArray} from '@applitools/utils'
 import type * as BaseCore from '@applitools/core-base/types'
 import type * as AutomationCore from '../automation/types'
-import {type SpecType, type Driver} from '@applitools/driver'
+import {type SpecType} from '@applitools/driver'
 import {type Logger} from '@applitools/logger'
 import {type Proxy} from '@applitools/req'
 import {
@@ -11,22 +11,21 @@ import {
   type DomSnapshot,
   type AndroidSnapshot,
   type IOSSnapshot,
+  RendererSettings,
 } from '@applitools/ufg-client'
-import {type NMLClient, type NMLRequestsConfig} from '@applitools/nml-client'
 
 export * from '../automation/types'
 
 export type SnapshotTarget = MaybeArray<DomSnapshot> | MaybeArray<AndroidSnapshot> | MaybeArray<IOSSnapshot>
 export type Target<TSpec extends SpecType> = SnapshotTarget | AutomationCore.Target<TSpec>
 
+export type GetBaseEyesSettings = RendererSettings & {
+  properties?: BaseCore.CustomProperty[]
+}
+
 export interface Core<TSpec extends SpecType> extends AutomationCore.Core<TSpec> {
   readonly type: 'ufg'
   getUFGClient(options?: {config: UFGRequestsConfig; concurrency?: number; logger?: Logger}): Promise<UFGClient>
-  getNMLClient(options: {
-    config: Omit<NMLRequestsConfig, 'brokerUrl'>
-    driver: Driver<TSpec>
-    logger?: Logger
-  }): Promise<NMLClient | null>
   openEyes(options: {
     target?: AutomationCore.DriverTarget<TSpec>
     settings: AutomationCore.OpenSettings
@@ -38,10 +37,7 @@ export interface Core<TSpec extends SpecType> extends AutomationCore.Core<TSpec>
 export interface Eyes<TSpec extends SpecType> extends AutomationCore.Eyes<TSpec> {
   readonly type: 'ufg'
   readonly core: Core<TSpec>
-  getBaseEyes(options?: {
-    settings?: {type: 'web' | 'native'; renderer: Renderer}
-    logger?: Logger
-  }): Promise<BaseCore.Eyes[]>
+  getBaseEyes(options?: {settings?: GetBaseEyesSettings; logger?: Logger}): Promise<BaseCore.Eyes[]>
   check(options?: {target?: Target<TSpec>; settings?: CheckSettings<TSpec>; logger?: Logger}): Promise<CheckResult[]>
   checkAndClose(options?: {
     target?: Target<TSpec>
@@ -52,12 +48,11 @@ export interface Eyes<TSpec extends SpecType> extends AutomationCore.Eyes<TSpec>
 }
 
 export type CheckSettings<TSpec extends SpecType> = AutomationCore.CheckSettings<TSpec> & {
-  renderers?: Renderer[]
+  renderers?: (Renderer & {properties?: BaseCore.CustomProperty[]})[]
   hooks?: {beforeCaptureScreenshot: string}
   disableBrowserFetching?: boolean
-  layoutBreakpoints?: boolean | number[]
+  layoutBreakpoints?: {breakpoints: number[] | boolean; reload?: boolean}
   ufgOptions?: Record<string, any>
-  nmgOptions?: Record<string, any>
   autProxy?: Proxy & {mode?: 'Allow' | 'Block'; domains?: string[]}
 }
 

@@ -20,17 +20,20 @@ export function makeFindElement({req}: Options) {
     logger: Logger
   }): Promise<void> {
     logger.log('Inspecting element lookup request to collect self-healing metadata')
-    const proxyResponse = await req(request.url!, {io: {request, response, handle: false}, logger})
-    const responseBody: any = await proxyResponse.json()
-    if (responseBody?.appliCustomData?.selfHealing?.successfulSelector) {
-      logger.log('Self-healed locators detected', responseBody.appliCustomData.selfHealing)
+    const proxyResponse = await req(request.url!, {
+      baseUrl: session.serverUrl,
+      io: {request, response, handle: false},
+      logger,
+    })
+    const responseBody = Buffer.from(await proxyResponse.arrayBuffer())
+    const parsed = JSON.parse(responseBody.toString('utf8'))
+    if (parsed?.appliCustomData?.selfHealing?.successfulSelector) {
+      logger.log('Self-healed locators detected', parsed.appliCustomData.selfHealing)
       session.metadata ??= []
-      session.metadata.push(responseBody.appliCustomData.selfHealing)
+      session.metadata.push(parsed.appliCustomData.selfHealing)
     } else {
       logger.log('No self-healing metadata found')
     }
-    response
-      .writeHead(proxyResponse.status, Object.fromEntries(proxyResponse.headers.entries()))
-      .end(JSON.stringify(responseBody))
+    response.writeHead(proxyResponse.status, Object.fromEntries(proxyResponse.headers.entries())).end(responseBody)
   }
 }

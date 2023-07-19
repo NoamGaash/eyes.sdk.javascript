@@ -1,0 +1,24 @@
+name: Java SDK publish
+description: Java SDKs publish action
+
+inputs:
+  working-directory:
+    description: the path to the directory from repository root
+    type: string
+    required: true
+  profile:
+    description: Distribution management repository (snapshot, maven, jfrog)
+    type: string
+    required: false
+    default: snapshot
+
+runs:
+  using: composite
+  steps:
+    - name: Publish
+      if: success()
+      working-directory: ${{inputs.working-directory}}
+      shell: bash
+      run: |
+        mvn --batch-mode -P ${{inputs.server}} deploy -DskipTests
+        echo "Succesfully published Java SDKs"

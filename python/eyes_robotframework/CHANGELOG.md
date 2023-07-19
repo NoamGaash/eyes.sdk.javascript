@@ -1,3 +1,16 @@
+## [5.12.1] - 2023-07-18
+### Fixed
+- Avoid pyyaml versions broken by recent cython major release
+
+## [5.12.0] - 2023-05-24
+### Added
+- Get Execution Cloud URL  keyword [Trello 3228](https://trello.com/c/WJDMOddC)
+- Support of reloading the browser after resizing the page with Layout Breakpoints [Trello 99](https://trello.com/c/3KZDat3M)
+
+## [5.11.2] - 2023-05-11
+### Fixed
+- PropagateEyesTestResults model modifier failure in UFG test suites [Trello 3216](https://trello.com/c/EnWBl1se)
+
 ## [5.11.1] - 2023-03-14
 ### Fixed
 - IosVersion.LATEST is not a valid AndroidVersion error when native_mobile_grid is configured with Android device [Trello 3174](https://trello.com/c/O3c1xs0L)

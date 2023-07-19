@@ -1,39 +1,25 @@
 {
   "name": "@applitools/sdk-coverage-tests",
-  "version": "3.0.2",
-  "engines": {
-    "node": ">=12.12.0"
-  },
+  "version": "3.1.0",
   "description": "Coverage Tests for Applitools SDKs",
   "author": "Applitools <team@applitools.com>",
   "homepage": "https://github.com/applitools/eyes.sdk.javascript1#readme",
   "license": "SEE LICENSE IN LICENSE",
-  "directories": {
-    "lib": "./src",
-    "test": "./test"
-  },
-  "types": "./src/coverage-tests/index.d.ts",
-  "aliases": [
-    "coverage-tool",
-    "coverage"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/applitools/eyes.sdk.javascript1.git",
     "directory": "js/packages/sdk-coverage-tests"
   },
-  "scripts": {
-    "lint": "eslint . --ext .js",
-    "test": "mocha 'test/**/*.spec.js'",
-    "test:sanity": "yarn test",
-    "preversion": "bongo preversion && yarn test",
-    "version": "bongo version",
-    "postversion": "bongo postversion",
-    "deps": "bongo deps",
-    "prepublish:setup": "echo 'no setup'"
-  },
   "bugs": {
     "url": "https://github.com/applitools/eyes.sdk.javascript1/issues"
+  },
+  "bin": {
+    "coverage-tests": "./src/cli.js"
+  },
+  "types": "./src/coverage-tests/index.d.ts",
+  "scripts": {
+    "lint": "run --top-level eslint '**/*.js'",
+    "test": "run --top-level mocha 'test/**/*.spec.js'"
   },
   "dependencies": {
     "@babel/core": "7.12.10",
@@ -41,23 +27,13 @@
     "handlebars": "4.7.7",
     "jszip": "3.10.1",
     "node-fetch": "2.6.7",
-    "prettier": "2.3.0",
     "sync-fetch": "0.3.0",
-    "yargs": "16.0.3"
+    "yargs": "^17.7.2"
   },
-  "devDependencies": {
-    "@applitools/bongo": "^3.0.3",
-    "@typescript-eslint/parser": "4.2.0",
-    "eslint": "^7.9.0",
-    "eslint-plugin-mocha-no-only": "^1.1.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^3.1.4",
-    "mocha": "8.1.3",
-    "ncp": "^2.0.0",
-    "prettier": "^2.3.0",
-    "typescript": "4.0.3"
+  "engines": {
+    "node": ">=12.12.0"
   },
-  "bin": {
-    "coverage-tests": "./src/cli.js"
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -10,8 +10,8 @@ import {makeSetViewportSize} from '../automation/set-viewport-size'
 import {makeLocate} from '../automation/locate'
 import {makeLocateText} from '../automation/locate-text'
 import {makeExtractText} from '../automation/extract-text'
+import {makeGetNMLClient} from '../automation/get-nml-client'
 import {makeGetUFGClient} from './get-ufg-client'
-import {makeGetNMLClient} from './get-nml-client'
 import {makeOpenEyes} from './open-eyes'
 import * as utils from '@applitools/utils'
 
@@ -36,7 +36,7 @@ export function makeCore<TSpec extends SpecType>({
   cwd = process.cwd(),
   logger: defaultLogger,
 }: Options<TSpec>): Core<TSpec> {
-  const logger = defaultLogger?.extend({label: 'core-ufg'}) ?? makeLogger({label: 'core-ufg'})
+  const logger = makeLogger({logger: defaultLogger, format: {label: 'core-ufg'}})
   logger.log(`Core ufg is initialized ${base ? 'with' : 'without'} custom base core`)
 
   base ??= makeBaseCore({agentId, concurrency, cwd, logger})

@@ -13,7 +13,6 @@ import {
   type Cookie,
 } from '@applitools/driver'
 import {takeDomSnapshots} from './utils/take-dom-snapshots'
-import {takeVHSes} from './utils/take-vhses'
 import {waitForLazyLoad} from '../automation/utils/wait-for-lazy-load'
 import {toBaseCheckSettings} from '../automation/utils/to-base-check-settings'
 import {generateSafeSelectors} from './utils/generate-safe-selectors'
@@ -35,19 +34,20 @@ export function makeCheckAndClose<TSpec extends SpecType>({
   target: defaultTarget,
   spec,
   signal,
-  logger: defaultLogger,
+  logger: mainLogger,
 }: Options<TSpec>) {
   return async function checkAndClose({
     target = defaultTarget,
     settings = {},
-    logger = defaultLogger,
+    logger = mainLogger,
   }: {
     target?: Target<TSpec>
     settings?: CheckSettings<TSpec> & CloseSettings
     logger?: Logger
   }): Promise<TestResult[]> {
-    logger.log('Command "checkAndClose" is called with settings', settings)
+    logger = logger.extend(mainLogger)
 
+    logger.log('Command "checkAndClose" is called with settings', settings)
     if (signal?.aborted) {
       logger.warn('Command "checkAndClose" was called after test was already aborted')
       throw new AbortError('Command "checkAndClose" was called after test was already aborted')
@@ -59,7 +59,7 @@ export function makeCheckAndClose<TSpec extends SpecType>({
 
     const uniqueRenderers = uniquifyRenderers(settings.renderers ?? [])
     const ufgClient = await eyes.core.getUFGClient({
-      config: {...eyes.test.ufgServer},
+      config: {...eyes.test.ufgServer, eyesServerUrl: eyes.test.server.serverUrl, eyesApiKey: eyes.test.server.apiKey},
       concurrency: uniqueRenderers.length || 5,
       logger,
     })
@@ -85,7 +85,7 @@ export function makeCheckAndClose<TSpec extends SpecType>({
       }
       let cleanupGeneratedSelectors
       if (environment.isWeb) {
-        userAgent = (await driver.getUserAgentLegacy()) ?? undefined
+        userAgent = await driver.getUserAgentLegacy()
         const generated = await generateSafeSelectors({
           context: driver.currentContext,
           elementReferences: [
@@ -145,11 +145,7 @@ export function makeCheckAndClose<TSpec extends SpecType>({
         snapshots = await takeDomSnapshots({driver, ...snapshotOptions, logger})
       } else {
         const nmlClient = await eyes.core.getNMLClient({config: eyes.test.server, driver, logger})
-        if (nmlClient) {
-          snapshots = (await nmlClient.takeSnapshots({...snapshotOptions, logger})) as AndroidSnapshot[] | IOSSnapshot[]
-        } else {
-          snapshots = await takeVHSes({driver, ...snapshotOptions, logger})
-        }
+        snapshots = (await nmlClient.takeSnapshots({...snapshotOptions, logger})) as AndroidSnapshot[] | IOSSnapshot[]
       }
 
       await currentContext.focus()
@@ -167,17 +163,19 @@ export function makeCheckAndClose<TSpec extends SpecType>({
       safeSelector: selector as Selector,
     }))
 
-    const promises = uniqueRenderers.map(async (renderer, index) => {
+    const promises = uniqueRenderers.map(async ({properties, ...renderer}, index) => {
+      const rendererLogger = logger.extend({tags: [`renderer-${utils.general.shortid()}`]})
+
       if (utils.types.has(renderer, 'name') && renderer.name === 'edge') {
         const message = chalk.yellow(
           `The 'edge' option that is being used in your browsers' configuration will soon be deprecated. Please change it to either 'edgelegacy' for the legacy version or to 'edgechromium' for the new Chromium-based version. Please note, when using the built-in BrowserType enum, then the values are BrowserType.EDGE_LEGACY and BrowserType.EDGE_CHROMIUM, respectively.`,
         )
-        logger.console.log(message)
+        rendererLogger.console.log(message)
       }
 
       try {
         if (signal?.aborted) {
-          logger.warn('Command "check" was aborted before rendering')
+          rendererLogger.warn('Command "check" was aborted before rendering')
           throw new AbortError('Command "check" was aborted before rendering')
         }
 
@@ -193,16 +191,22 @@ export function makeCheckAndClose<TSpec extends SpecType>({
             autProxy: settings.autProxy,
             userAgent,
           },
+          logger: rendererLogger,
         })
 
-        const [baseEyes] = await eyes.getBaseEyes({settings: {renderer, type: snapshotType}, logger})
+        const [baseEyes] = await eyes.getBaseEyes({
+          settings: {renderer, type: snapshotType, properties},
+          logger,
+        })
 
         try {
           if (signal?.aborted) {
-            logger.warn('Command "check" was aborted before rendering')
+            rendererLogger.warn('Command "check" was aborted before rendering')
             throw new AbortError('Command "check" was aborted before rendering')
           } else if (!baseEyes.running) {
-            logger.warn(`Renderer with id ${baseEyes.test.rendererId} was aborted during one of the previous steps`)
+            rendererLogger.warn(
+              `Renderer with id ${baseEyes.test.rendererId} was aborted during one of the previous steps`,
+            )
             throw new AbortError(
               `Renderer with id "${baseEyes.test.rendererId}" was aborted during one of the previous steps`,
             )
@@ -211,10 +215,12 @@ export function makeCheckAndClose<TSpec extends SpecType>({
           const renderTarget = await renderTargetPromise
 
           if (signal?.aborted) {
-            logger.warn('Command "check" was aborted before rendering')
+            rendererLogger.warn('Command "check" was aborted before rendering')
             throw new AbortError('Command "check" was aborted before rendering')
           } else if (!baseEyes.running) {
-            logger.warn(`Renderer with id ${baseEyes.test.rendererId} was aborted during one of the previous steps`)
+            rendererLogger.warn(
+              `Renderer with id ${baseEyes.test.rendererId} was aborted during one of the previous steps`,
+            )
             throw new AbortError(
               `Renderer with id "${baseEyes.test.rendererId}" was aborted during one of the previous steps`,
             )
@@ -234,6 +240,7 @@ export function makeCheckAndClose<TSpec extends SpecType>({
               rendererId: baseEyes.test.rendererId!,
             },
             signal,
+            logger: rendererLogger,
           })
           let offset = 0
           const baseSettings = getBaseCheckSettings({
@@ -247,10 +254,12 @@ export function makeCheckAndClose<TSpec extends SpecType>({
           baseTarget.name = snapshotTitle
 
           if (signal?.aborted) {
-            logger.warn('Command "check" was aborted after rendering')
+            rendererLogger.warn('Command "check" was aborted after rendering')
             throw new AbortError('Command "check" was aborted after rendering')
           } else if (!baseEyes.running) {
-            logger.warn(`Renderer with id ${baseEyes.test.rendererId} was aborted during one of the previous steps`)
+            rendererLogger.warn(
+              `Renderer with id ${baseEyes.test.rendererId} was aborted during one of the previous steps`,
+            )
             throw new AbortError(
               `Renderer with id "${baseEyes.test.rendererId}" was aborted during one of the previous steps`,
             )
@@ -259,31 +268,23 @@ export function makeCheckAndClose<TSpec extends SpecType>({
           const [result] = await baseEyes.checkAndClose({
             target: {...baseTarget, isTransformed: true},
             settings: baseSettings,
-            logger,
+            logger: rendererLogger,
           })
 
-          return {...result, eyes: baseEyes, renderer}
+          return {...result, userTestId: eyes.test.userTestId, eyes: baseEyes, renderer}
         } catch (error: any) {
-          await baseEyes.abort()
+          rendererLogger.error(`Renderer with id ${baseEyes.test.rendererId} failed due to an error`, error)
+          await baseEyes.abort({logger: rendererLogger})
           error.info = {eyes: baseEyes}
           throw error
         }
       } catch (error: any) {
+        rendererLogger.error(`Renderer with id ${renderer.id} failed before rendering started due to an error`, error)
         error.info = {...error.info, userTestId: eyes.test.userTestId, renderer}
         throw error
       }
     })
 
-    return Promise.all(
-      promises.map(async promise => {
-        try {
-          const result = await promise
-          return {...result, userTestId: eyes.test.userTestId}
-        } catch (error: any) {
-          await error.info?.eyes?.abort({logger})
-          throw error
-        }
-      }),
-    )
+    return Promise.all(promises)
   }
 }

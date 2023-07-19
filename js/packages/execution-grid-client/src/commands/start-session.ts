@@ -1,16 +1,21 @@
 import type {ECSession, ECCapabilitiesOptions, ECClientSettings} from '../types'
 import {type IncomingMessage, type ServerResponse} from 'http'
-import {type AbortSignal} from 'abort-controller'
 import {type Logger} from '@applitools/logger'
 import {type ReqProxy} from '../req-proxy'
 import {type TunnelManager} from '../tunnels/manager'
-import {makeQueue, type Queue} from '../utils/queue'
+import {prepareTunnelEnvironment} from '@applitools/tunnel-client'
+import {AbortController, type AbortSignal} from 'abort-controller'
 import * as utils from '@applitools/utils'
 
 type Options = {
   settings: ECClientSettings
   req: ReqProxy
   tunnels?: TunnelManager
+}
+
+const SERVER_URLS = {
+  'us-west': 'https://exec-wus.applitools.com',
+  australia: 'https://exec-au.applitools.com',
 }
 
 const RETRY_BACKOFF = [
@@ -20,7 +25,7 @@ const RETRY_BACKOFF = [
 ]
 
 export function makeStartSession({settings, req, tunnels}: Options) {
-  const queues = new Map<string, Queue>()
+  const queues = new Map<string, utils.queues.CorkableQueue<ECSession, AbortController>>()
 
   return async function createSession({
     request,
@@ -35,34 +40,56 @@ export function makeStartSession({settings, req, tunnels}: Options) {
 
     logger.log(`Request was intercepted with body:`, requestBody)
 
-    const capabilities: Record<string, any> = requestBody.capabilities?.alwaysMatch ?? requestBody.desiredCapabilities
+    let capabilities: Record<string, any> = {}
+
+    if (!utils.types.isEmpty(requestBody.desiredCapabilities)) {
+      capabilities = requestBody.desiredCapabilities
+    } else if (!utils.types.isEmpty(requestBody.capabilities?.alwaysMatch)) {
+      capabilities = requestBody.capabilities.alwaysMatch
+    } else if (!utils.types.isEmpty(requestBody.capabilities?.firstMatch?.[0])) {
+      capabilities = requestBody.capabilities?.firstMatch?.[0]
+    }
+
     const options = {
       ...settings.options,
       ...capabilities?.['applitools:options'],
       ...(capabilities &&
-        Object.fromEntries<ECCapabilitiesOptions>(
+        Object.fromEntries(
           Object.entries(capabilities).map(([key, value]) => [key.replace(/^applitools:/, ''), value]),
         )),
-    }
+    } as ECCapabilitiesOptions
+
     const session = {
+      serverUrl: settings.serverUrl,
+      proxy: settings.proxy,
       credentials: {eyesServerUrl: options.eyesServerUrl, apiKey: options.apiKey},
       options,
     } as ECSession
-    if (options.tunnel && tunnels) {
-      session.tunnels = await tunnels.acquire(session.credentials)
-      session.tunnels.forEach((tunnel, index) => {
-        options[`x-tunnel-id-${index}`] = tunnel.tunnelId
-      })
+
+    if (options.region) {
+      if (SERVER_URLS[options.region]) session.serverUrl = SERVER_URLS[options.region]
+      else throw new Error(`Failed to create session in unknown region ${options.region}`)
     }
 
-    const applitoolsCapabilities = Object.fromEntries(
-      Object.entries(options).map(([key, value]) => [`applitools:${key}`, value]),
-    )
-    if (requestBody.capabilities) {
-      requestBody.capabilities.alwaysMatch = {...requestBody.capabilities?.alwaysMatch, ...applitoolsCapabilities}
+    if (options.tunnel && tunnels) {
+      // TODO should be removed once tunnel spawning issue is solved
+      await prepareTunnelEnvironment({settings: {tunnelServerUrl: session.serverUrl}, logger})
+      session.tunnels = await tunnels.acquire({...session.credentials, tunnelServerUrl: session.serverUrl})
     }
-    if (requestBody.desiredCapabilities) {
+
+    const applitoolsCapabilities = Object.fromEntries([
+      ...Object.entries(options).map(([key, value]) => [`applitools:${key}`, value]),
+      ...(session.tunnels?.map((tunnel, index) => [`applitools:x-tunnel-id-${index}`, tunnel.tunnelId]) ?? []),
+    ])
+
+    if (!utils.types.isEmpty(requestBody.desiredCapabilities)) {
       requestBody.desiredCapabilities = {...requestBody.desiredCapabilities, ...applitoolsCapabilities}
+    } else if (!utils.types.isEmpty(requestBody.capabilities?.alwaysMatch)) {
+      requestBody.capabilities.alwaysMatch = {...requestBody.capabilities?.alwaysMatch, ...applitoolsCapabilities}
+    } else if (!utils.types.isEmpty(requestBody.capabilities?.firstMatch?.[0])) {
+      requestBody.capabilities.firstMatch = [{...requestBody.capabilities.firstMatch[0], ...applitoolsCapabilities}]
+    } else {
+      requestBody.desiredCapabilities = {...applitoolsCapabilities}
     }
 
     logger.log('Request body has modified:', requestBody)
@@ -70,7 +97,9 @@ export function makeStartSession({settings, req, tunnels}: Options) {
     const queueKey = JSON.stringify(session.credentials)
     let queue = queues.get(queueKey)!
     if (!queue) {
-      queue = makeQueue({logger: logger.extend({tags: {queue: queueKey}})})
+      queue = utils.queues.makeCorkableQueue<ECSession, AbortController>({
+        makeAbortController: () => new AbortController(),
+      })
       queues.set(queueKey, queue)
     }
 
@@ -82,7 +111,8 @@ export function makeStartSession({settings, req, tunnels}: Options) {
       // do not start the task if it is already aborted
       if (signal.aborted) return queue.pause
 
-      const proxyResponse = await req(request.url as string, {
+      const proxyResponse = await req(request.url!, {
+        baseUrl: session.serverUrl,
         body: requestBody,
         io: {request, response, handle: false},
         // TODO uncomment when we can throw different abort reasons for task cancelation and timeout abortion
@@ -112,9 +142,7 @@ export function makeStartSession({settings, req, tunnels}: Options) {
           if (proxyResponse.headers.has('content-length')) {
             proxyResponse.headers.set('content-length', Buffer.byteLength(JSON.stringify(responseBody)).toString())
           }
-          session.serverUrl = settings.serverUrl
           session.sessionId = responseBody.value.sessionId
-          session.proxy = settings.proxy
           session.capabilities = responseBody.value.capabilities
         }
         response

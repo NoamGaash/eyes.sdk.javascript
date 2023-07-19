@@ -9,7 +9,7 @@ export type DomSnapshot = {
   cdt: any[]
   url: string
   resourceUrls: string[]
-  resourceContents: Record<string, {type: string; value: Buffer; dependencies?: string[]} | {errorStatusCode: number}>
+  resourceContents: Record<string, {type: string; value: string; dependencies?: string[]} | {errorStatusCode: number}>
   frames: DomSnapshot[]
   cookies?: Cookie[]
 }
@@ -91,7 +91,10 @@ export type ChromeEmulationDevice =
   | 'Galaxy S10'
   | 'Galaxy S10 Plus'
   | 'Galaxy S20'
+  | 'Galaxy S21'
+  | 'Galaxy S21 Ultra'
   | 'Galaxy S22'
+  | 'Galaxy S22 Ultra'
   | 'Galaxy Tab S7'
   | 'iPad'
   | 'iPad 6th Gen'
@@ -233,9 +236,18 @@ export type Renderer = (
 }
 
 export interface UFGClient {
-  createRenderTarget(options: {snapshot: Snapshot; settings?: ProcessResourcesSettings}): Promise<RenderTarget>
-  bookRenderer(options: {settings: RendererSettings}): Promise<RendererEnvironment>
-  render(options: {target: RenderTarget; settings: RenderSettings; signal?: AbortSignal}): Promise<RenderResult>
+  createRenderTarget(options: {
+    snapshot: Snapshot
+    settings?: ProcessResourcesSettings
+    logger?: Logger
+  }): Promise<RenderTarget>
+  bookRenderer(options: {settings: RendererSettings; logger?: Logger}): Promise<RendererEnvironment>
+  render(options: {
+    target: RenderTarget
+    settings: RenderSettings
+    signal?: AbortSignal
+    logger?: Logger
+  }): Promise<RenderResult>
   getChromeEmulationDevices(options?: {logger?: Logger}): Promise<Record<ChromeEmulationDevice, any>>
   getIOSDevices(options?: {logger?: Logger}): Promise<Record<IOSDevice, any>>
   getAndroidDevices(options?: {logger?: Logger}): Promise<Record<AndroidDevice, any>>

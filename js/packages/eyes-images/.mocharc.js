@@ -7,6 +7,6 @@ module.exports = {
   timeout: 0,
   require: ['ts-node/register'],
   reporter: 'mocha-multi',
-  reporterOptions: [`spec=-,json=./logs/report${group ? `-${group}` : ''}.json,xunit=coverage-test-report.xml`],
-  grep: mochaGrep({tags}),
+  reporterOptions: [`spec=-,json=./logs/report${group ? `-${group}` : ''}.json,xunit=./logs/report.xml`],
+  grep: mochaGrep({tags: {allow: tags}}),
 }

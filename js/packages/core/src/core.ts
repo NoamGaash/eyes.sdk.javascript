@@ -5,6 +5,7 @@ import {makeLogger, type Logger} from '@applitools/logger'
 import {makeCore as makeBaseCore} from '@applitools/core-base'
 import {makeGetViewportSize} from './automation/get-viewport-size'
 import {makeSetViewportSize} from './automation/set-viewport-size'
+import {makeGetNMLClient} from './automation/get-nml-client'
 import {makeLocate} from './locate'
 import {makeLocateText} from './locate-text'
 import {makeExtractText} from './extract-text'
@@ -32,7 +33,7 @@ export function makeCore<TSpec extends SpecType>({
   cwd = process.cwd(),
   logger: defaultLogger,
 }: Options<TSpec> = {}): Core<TSpec, 'classic' | 'ufg'> {
-  const logger = defaultLogger?.extend({label: 'core'}) ?? makeLogger({label: 'core'})
+  const logger = makeLogger({logger: defaultLogger, format: {label: 'core'}})
   logger.log(`Core is initialized ${defaultBase ? 'with' : 'without'} custom base core`)
 
   const base = defaultBase ?? makeBaseCore({agentId, cwd, logger})
@@ -41,6 +42,7 @@ export function makeCore<TSpec extends SpecType>({
       base: base!,
       getViewportSize: spec && makeGetViewportSize({spec, logger}),
       setViewportSize: spec && makeSetViewportSize({spec, logger}),
+      getNMLClient: makeGetNMLClient({logger}),
       getECClient: makeGetECClient({logger}),
       makeManager: makeMakeManager({spec, concurrency, core, base: defaultBase, agentId, logger}),
       locate: makeLocate({spec, core, logger}),

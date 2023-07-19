@@ -6,7 +6,9 @@ import {makeBookRenderer} from './book-renderer'
 import {makeRender} from './render'
 import {makeProcessResources} from './resources/process-resources'
 import {makeFetchResource} from './resources/fetch-resource'
+import {makeFetchResourceFromTunnel} from './resources/fetch-resource-from-tunnel'
 import {makeUploadResource} from './resources/upload-resource'
+import * as utils from '@applitools/utils'
 
 export const defaultResourceCache = new Map<string, any>()
 
@@ -19,15 +21,24 @@ export function makeUFGClient({
   cache?: Map<string, any>
   logger?: Logger
 }): UFGClient {
-  logger = logger?.extend({label: 'ufg client'}) ?? makeLogger({label: 'ufg client'})
+  logger = makeLogger({logger, format: {label: 'ufg-client'}})
 
   const requests = makeUFGRequests({config, logger})
-  const fetchResource = makeFetchResource({logger, fetchConcurrency: config.fetchConcurrency})
+  const fetchResource = utils.general.getEnvValue('FETCH_RESOURCE_FROM_TUNNEL', 'boolean')
+    ? makeFetchResourceFromTunnel({
+        fetchConcurrency: config.fetchConcurrency,
+        accessToken: config.accessToken,
+        eyesServerUrl: config.eyesServerUrl,
+        eyesApiKey: config.eyesApiKey,
+        tunnelIds: utils.general.getEnvValue('TUNNEL_IDS'),
+        logger,
+      })
+    : makeFetchResource({fetchConcurrency: config.fetchConcurrency, logger})
   const uploadResource = makeUploadResource({requests, logger})
   const processResources = makeProcessResources({fetchResource, uploadResource, cache, logger})
 
   return {
-    createRenderTarget: makeCreateRenderTarget({processResources}),
+    createRenderTarget: makeCreateRenderTarget({processResources, logger}),
     bookRenderer: makeBookRenderer({requests, logger}),
     render: makeRender({requests, logger}),
     getChromeEmulationDevices: requests.getChromeEmulationDevices,

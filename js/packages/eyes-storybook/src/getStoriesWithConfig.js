@@ -1,6 +1,6 @@
 const {splitConfigsByBrowser, shouldRenderIE} = require('./shouldRenderIE');
 const getStoryTitle = require('./getStoryTitle');
-const {transformBrowser} = require('./generateConfig');
+const {transformConfig} = require('./generateConfig');
 const {checkSettingsParams} = require('./checkSettingsParams');
 const getStoryBaselineName = require('./getStoryBaselineName');
 
@@ -13,7 +13,7 @@ function makeGetStoriesWithConfig({config}) {
   return function getStoriesWithConfig({stories, logger = console}) {
     const storiesWithTitle = addStoryTitleAndBaselineName(stories);
     if (!config.storyConfiguration) {
-      addConfigToStories({config, stories: storiesWithTitle});
+      addConfigToStories({config, stories: storiesWithTitle, isStoryConfig: false});
     } else {
       const storyConfigurations = Array.isArray(config.storyConfiguration)
         ? config.storyConfiguration
@@ -34,9 +34,13 @@ function makeGetStoriesWithConfig({config}) {
               }
             })
             .filter(Boolean);
+
+          const storyConfigReduced = allowedProps(storyConfig);
+          transformConfig(storyConfigReduced);
           addConfigToStories({
-            config: transformBrowser(allowedProps(storyConfig)),
+            config: storyConfigReduced,
             stories: storiesSubset,
+            isStoryConfig: true,
           });
 
           remainingStories = remainingStories.filter(story => !storiesSubset.includes(story));
@@ -44,7 +48,7 @@ function makeGetStoriesWithConfig({config}) {
       }
 
       if (remainingStories.length) {
-        addConfigToStories({config: basicConfig, stories: remainingStories});
+        addConfigToStories({config: basicConfig, stories: remainingStories, isStoryConfig: true});
       }
     }
     return {
@@ -53,27 +57,37 @@ function makeGetStoriesWithConfig({config}) {
     };
   };
 
-  function addConfigToStories({config, stories}) {
+  function addConfigToStories({config, stories, isStoryConfig}) {
     const configs = config.fakeIE ? splitConfigsByBrowser(config) : [config];
     for (const config of configs) {
       for (const story of stories) {
-        addConfigToStoy({
+        addConfigToStory({
           story,
           config,
           isIE: shouldRenderIE(config),
+          isStoryConfig,
         });
       }
     }
   }
 
-  function addConfigToStoy({story, config, isIE}) {
+  function addConfigToStory({story, config, isIE, isStoryConfig}) {
     const storiesToUpdate = isIE ? storiesWithConfigIE : storiesWithConfig;
+    const storyEyesParameters = {...story.parameters?.eyes};
+    transformConfig(storyEyesParameters);
     storiesToUpdate.set(story.baselineName, {
       ...story,
       config: {
         ...basicConfig,
         ...storiesToUpdate.get(story.baselineName)?.config,
         ...config,
+        ...storyEyesParameters,
+        properties: [
+          ...(isStoryConfig ? basicConfig.properties || [] : []),
+          ...(storiesToUpdate.get(story.baselineName)?.config.properties || []),
+          ...(config.properties || []),
+          ...(story.parameters?.eyes?.properties || []),
+        ],
       },
     });
   }

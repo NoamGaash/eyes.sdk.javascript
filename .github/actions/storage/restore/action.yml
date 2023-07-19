@@ -1,0 +1,19 @@
+name: Restore artifacts
+
+inputs:
+  name:
+    description: composite artifact name(s)
+    type: string
+    required: true
+  latest:
+    description: restore latest artifact
+    type: boolean
+    default: false
+  wait:
+    description: wait for the artifact to appear
+    type: boolean
+    default: false
+
+runs:
+  using: node16
+  main: dist/index.js

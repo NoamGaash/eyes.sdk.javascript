@@ -29,7 +29,7 @@ describe('getAllTestResults', () => {
     try {
       await pexec(`cp -r ${sourceTestAppPath}/. ${targetTestAppPath}`)
       process.chdir(targetTestAppPath)
-      await pexec(`npm install`, {
+      await pexec(`yarn`, {
         maxBuffer: 1000000,
       })
     } catch (ex) {
@@ -43,7 +43,7 @@ describe('getAllTestResults', () => {
   })
 
   it('return test results for all managers', async () => {
-    const [err, v] = await presult(runCypress('get-test-results.js', 'getAllTestResults.js'))
+    const [err, v] = await presult(runCypress('log-plugin.js', 'getAllTestResults.js'))
     expect(err).to.be.undefined
     expect(v).to.contain('This is the first test')
     expect(v).to.contain('This is the second test')
@@ -51,7 +51,7 @@ describe('getAllTestResults', () => {
 
   it('return test results for all managers without duplicates', async () => {
     // removeDuplicateTests opted into in test/fixtures/testApp/applitools.config.js
-    const [err, v] = await presult(runCypress('get-test-results.js', 'getAllTestResultsWithDuplicates.js'))
+    const [err, v] = await presult(runCypress('log-plugin.js', 'getAllTestResultsWithDuplicates.js'))
     expect(err).to.be.undefined
     expect(v).to.contain('This is the first test')
     expect(v).to.contain('This is the second test')
@@ -61,7 +61,7 @@ describe('getAllTestResults', () => {
   it('delete test results', async () => {
     const config = {...applitoolsConfig, showLogs: true}
     fs.writeFileSync(`${targetTestAppPath}/applitools.config.js`, 'module.exports =' + JSON.stringify(config, 2, null))
-    const [err, v] = await presult(runCypress('get-test-results.js', 'deleteTestResults.js'))
+    const [err, v] = await presult(runCypress('log-plugin.js', 'deleteTestResults.js'))
     expect(err).to.be.undefined
     expect(v).to.contain('Core.deleteTest')
   })

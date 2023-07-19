@@ -1413,6 +1413,61 @@ describe('capabilities', () => {
     })
   })
 
+  it('should work with Safari on iPhone 14 Pro Max using Appium 2.0 is BS', () => {
+    const capabilities = {
+      capabilities: {
+        sessionId: '7fa5bcd87f253ebccfb241a34f746e0c17aa48fc',
+        os: 'MAC',
+        osVersion: '16.0',
+        browser: 'iphone',
+        browserName: 'iphone',
+        version: 'iphone',
+        browserVersion: 'iphone',
+        device: 'iPhone 14 Pro Max-16.0',
+        deviceName: 'iPhone 14 Pro Max-16.0',
+        orientation: 'portrait',
+        deviceOrientation: 'portrait',
+        acceptSslCerts: false,
+      },
+      sessionId: '7fa5bcd87f253ebccfb241a34f746e0c17aa48fc',
+      os: 'MAC',
+      osVersion: '16.0',
+      browser: 'iphone',
+      browserName: 'iphone',
+      version: 'iphone',
+      browserVersion: 'iphone',
+      device: 'iPhone 14 Pro Max-16.0',
+      deviceName: 'iPhone 14 Pro Max-16.0',
+      orientation: 'portrait',
+      deviceOrientation: 'portrait',
+      acceptSslCerts: false,
+    }
+
+    const environment = extractCapabilitiesEnvironment(capabilities)
+    const viewport = extractCapabilitiesViewport(capabilities)
+
+    assert.deepStrictEqual(environment, {
+      browserName: 'iphone',
+      browserVersion: 'iphone',
+      platformName: undefined,
+      platformVersion: undefined,
+      deviceName: 'iPhone 14 Pro Max-16.0',
+      isW3C: true,
+      isECClient: false,
+      isMobile: true,
+      isNative: false,
+      isChrome: false,
+      isIOS: true,
+      isAndroid: false,
+    })
+    assert.deepStrictEqual(viewport, {
+      displaySize: undefined,
+      orientation: 'portrait',
+      pixelRatio: undefined,
+      statusBarSize: undefined,
+    })
+  })
+
   it('should work with Safari on iPad 5th using Appium 1.7 in BS', () => {
     const capabilities = {
       udid: '73b681dedf50e5a3df3ea4c0e0bc87641bd177b2',
@@ -1536,6 +1591,7 @@ describe('capabilities', () => {
       deviceName: 'iPhone 11 Pro',
       isW3C: true,
       isECClient: false,
+      isApplitoolsLib: false,
       isMobile: true,
       isNative: true,
       isChrome: false,
@@ -1607,6 +1663,7 @@ describe('capabilities', () => {
       deviceName: 'iPhone XS',
       isW3C: true,
       isECClient: false,
+      isApplitoolsLib: false,
       isMobile: true,
       isNative: true,
       isChrome: false,
@@ -1781,6 +1838,7 @@ describe('capabilities', () => {
       isMobile: true,
       isChrome: false,
       isECClient: false,
+      isApplitoolsLib: false,
       deviceName: 'Google Pixel 3a XL GoogleAPI Emulator',
       isIOS: false,
       isAndroid: true,
@@ -1792,6 +1850,194 @@ describe('capabilities', () => {
       pixelRatio: 2.5,
       statusBarSize: 60,
       navigationBarSize: 120,
+    })
+  })
+
+  it('should work with Native Android App instrumented with Applitools lib', () => {
+    const capabilities = {
+      deviceName: 'emulator-5554',
+      takesScreenshot: true,
+      orientation: 'PORTRAIT',
+      app: '/tmp/tmpLFqudB/AnkiDroid.apk',
+      newCommandTimeout: 0,
+      'webdriver.remote.sessionid': '6af9508c5c304028ab301a791457f083',
+      networkConnectionEnabled: true,
+      'selenium:webdriver.remote.quietExceptions': false,
+      deviceUDID: 'emulator-5554',
+      platform: 'LINUX',
+      appPackage: 'com.ichi2.anki',
+      deviceManufacturer: 'Google',
+      deviceScreenSize: '1080x2280',
+      eventTimings: true,
+      lastScrollData: null,
+      'sauce:options': {},
+      commandTimeout: 600,
+      deviceModel: 'sdk_gphone_x86_64_arm64',
+      autoGrantPermissions: true,
+      viewportRect: {width: 1080, top: 66, height: 2082, left: 0},
+      locationContextEnabled: false,
+      chromeOptions: {
+        args: [
+          '--disable-fre',
+          '--disable-popup-blocking',
+          '--enable-automation',
+          '--enable-remote-debugging',
+          '--ignore-certificate-errors',
+          '--metrics-recording-only',
+          '--no-first-run',
+          '--disable-search-geolocation-disclosure',
+          '--disable-gpu-rasterization',
+        ],
+      },
+      'noSign:noSign': true,
+      maxTypingFrequency: 8,
+      deviceApiLevel: 30,
+      platformName: 'ANDROID',
+      allowTestPackages: true,
+      pixelRatio: 2.75,
+      deviceScreenDensity: 440,
+      warnings: {},
+      javascriptEnabled: true,
+      automationName: 'uiautomator2',
+      databaseEnabled: false,
+      noReset: true,
+      desired: {
+        deviceName: 'Google Pixel 4 GoogleAPI Emulator',
+        orientation: 'PORTRAIT',
+        app: '/tmp/tmpLFqudB/AnkiDroid.apk',
+        noReset: true,
+        'selenium:webdriver.remote.quietExceptions': false,
+        newCommandTimeout: 0,
+        'sauce:options': {},
+        commandTimeout: 600,
+        autoGrantPermissions: true,
+        eventTimings: true,
+        chromeOptions: {
+          args: [
+            '--disable-fre',
+            '--disable-popup-blocking',
+            '--enable-automation',
+            '--enable-remote-debugging',
+            '--ignore-certificate-errors',
+            '--metrics-recording-only',
+            '--no-first-run',
+            '--disable-search-geolocation-disclosure',
+            '--disable-gpu-rasterization',
+          ],
+        },
+        'noSign:noSign': true,
+        maxTypingFrequency: 8,
+        platformName: 'ANDROID',
+        allowTestPackages: true,
+        automationName: 'uiautomator2',
+        proxy: {
+          proxyAutoconfigUrl: 'http://127.0.0.1:19876/pac.js',
+          proxyType: 'PAC',
+        },
+        platformVersion: '11.0',
+        appPackage: 'com.ichi2.anki',
+        appActivity: '.IntentHandler',
+        optionalIntentArguments: `--es APPLITOOLS '{"APPLITOOLS_API_KEY":"some_api_key","APPLITOOLS_SERVER_URL":"https://eyesapi.applitools.com"}'`,
+        udid: 'emulator-5554',
+        processArguments:
+          '{"args": [], "env":{"DYLD_INSERT_LIBRARIES":"@executable_path/Frameworks/UFG_lib.xcframework/ios-arm64/UFG_lib.framework/UFG_lib:@executable_path/Frameworks/UFG_lib.xcframework/ios-arm64_x86_64-simulator/UFG_lib.framework/UFG_lib","APPLITOOLS_API_KEY":"some_api_key","APPLITOOLS_SERVER_URL":"https://eyesapi.applitools.com"}}',
+        sauceLabsNetworkCaptureEnabled: true,
+      },
+      hasMetadata: true,
+      proxy: {
+        proxyAutoconfigUrl: 'http://127.0.0.1:19876/pac.js',
+        proxyType: 'PAC',
+      },
+      platformVersion: '11',
+      webStorageEnabled: false,
+      appActivity: '.IntentHandler',
+      optionalIntentArguments: `--es APPLITOOLS '{"APPLITOOLS_API_KEY":"some_api_key","APPLITOOLS_SERVER_URL":"https://eyesapi.applitools.com"}'`,
+      udid: 'emulator-5554',
+      statBarHeight: 66,
+      processArguments:
+        '{"args": [], "env":{"DYLD_INSERT_LIBRARIES":"@executable_path/Frameworks/UFG_lib.xcframework/ios-arm64/UFG_lib.framework/UFG_lib:@executable_path/Frameworks/UFG_lib.xcframework/ios-arm64_x86_64-simulator/UFG_lib.framework/UFG_lib","APPLITOOLS_API_KEY":"some_api_key","APPLITOOLS_SERVER_URL":"https://eyesapi.applitools.com"}}',
+      sauceLabsNetworkCaptureEnabled: true,
+    }
+
+    const environment = extractCapabilitiesEnvironment(capabilities)
+
+    assert.deepStrictEqual(environment, {
+      browserName: undefined,
+      browserVersion: undefined,
+      platformName: 'ANDROID',
+      platformVersion: '11',
+      isW3C: true,
+      isMobile: true,
+      isChrome: false,
+      isECClient: false,
+      isApplitoolsLib: true,
+      deviceName: 'Google Pixel 4 GoogleAPI Emulator',
+      isIOS: false,
+      isAndroid: true,
+      isNative: true,
+    })
+  })
+
+  it('should work with Native iOS App instrumented with Applitools lib', () => {
+    const capabilities = {
+      deviceName: 'iPhone 13',
+      orientation: 'PORTRAIT',
+      app: '/var/folders/3n/z0_2p7gn03q5x5mt40c4lj1m0000kr/T/tmpL_sEbA/UFGTestApp.app.zip',
+      noReset: true,
+      'selenium:webdriver.remote.quietExceptions': false,
+      CFBundleIdentifier: 'com.applitools.dev.UFGTestApp',
+      device: 'iphone',
+      bootstrapPath: '/Volumes/Sauce/wda/wda-v1.22.0-xcode12.4/WebDriverAgent',
+      newCommandTimeout: 0,
+      preventWDAAttachments: true,
+      'sauce:options': {},
+      viewportRect: {
+        width: 1170,
+        top: 141,
+        height: 2391,
+        left: 0,
+      },
+      derivedDataPath: '/Volumes/Sauce/wda/wda-v1.22.0-xcode12.4/WebDriverAgent/DerivedData/WebdriverAgent',
+      maxTypingFrequency: 8,
+      platformName: 'iOS',
+      pixelRatio: 3,
+      showIOSLog: false,
+      usePrebuiltWDA: true,
+      browserName: 'UFGTestApp',
+      platformVersion: '15.0',
+      eventTimings: true,
+      keepKeyChains: true,
+      sdkVersion: '15.0',
+      launchTimeout: 180000,
+      udid: 'B91B9C8D-84A7-4CB4-8DA8-314791DEAAD2',
+      statBarHeight: 47,
+      backendRetries: 4,
+      processArguments: {
+        args: [],
+        env: {
+          DYLD_INSERT_LIBRARIES:
+            '@executable_path/Frameworks/UFG_lib.xcframework/ios-arm64_x86_64-simulator/UFG_lib.framework/UFG_lib',
+          APPLITOOLS_API_KEY: 'some_api_key',
+        },
+      },
+    }
+
+    const environment = extractCapabilitiesEnvironment(capabilities)
+
+    assert.deepStrictEqual(environment, {
+      browserName: undefined,
+      browserVersion: undefined,
+      platformName: 'iOS',
+      platformVersion: '15.0',
+      isW3C: true,
+      isMobile: true,
+      isChrome: false,
+      isECClient: false,
+      isApplitoolsLib: true,
+      deviceName: 'iPhone 13',
+      isIOS: true,
+      isAndroid: false,
+      isNative: true,
     })
   })
 })

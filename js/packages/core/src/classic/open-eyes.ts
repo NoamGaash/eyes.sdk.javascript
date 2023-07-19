@@ -15,18 +15,20 @@ type Options<TSpec extends SpecType> = {
   logger: Logger
 }
 
-export function makeOpenEyes<TSpec extends SpecType>({core, spec, logger: defaultLogger}: Options<TSpec>) {
+export function makeOpenEyes<TSpec extends SpecType>({core, spec, logger: mainLogger}: Options<TSpec>) {
   return async function openEyes({
     target,
     settings,
     base,
-    logger = defaultLogger,
+    logger = mainLogger,
   }: {
     target?: DriverTarget<TSpec>
     settings: OpenSettings
     base?: BaseEyes[]
     logger?: Logger
   }): Promise<Eyes<TSpec>> {
+    logger = logger.extend(mainLogger)
+
     logger.log(
       `Command "openEyes" is called with ${target ? 'default driver and' : ''}`,
       ...(settings ? ['settings', settings] : []),
@@ -42,7 +44,7 @@ export function makeOpenEyes<TSpec extends SpecType>({core, spec, logger: defaul
         settings.environment.ecSessionId = (await driver.getSessionId())!
       }
       if (environment.isWeb) {
-        settings.environment.userAgent ??= (await driver.getUserAgentLegacy()) ?? undefined
+        settings.environment.userAgent ??= await driver.getUserAgentLegacy()
       }
       if (!settings.environment.deviceName && environment.deviceName) {
         settings.environment.deviceName = environment.deviceName
@@ -62,9 +64,10 @@ export function makeOpenEyes<TSpec extends SpecType>({core, spec, logger: defaul
             settings.environment.os += ` ${environment.platformVersion}`
           }
         } else if (
+          environment.isReliable &&
           environment.isChromium &&
-          ((environment.isWindows && Number.parseInt(environment.browserVersion as string) >= 107) ||
-            (environment.isMac && Number.parseInt(environment.browserVersion as string) >= 90))
+          ((environment.isWindows && Number.parseInt(environment.browserVersion!) >= 107) ||
+            (environment.isMac && Number.parseInt(environment.browserVersion!) >= 90))
         ) {
           settings.environment.os = `${environment.platformName} ${environment.platformVersion ?? ''}`.trim()
         }

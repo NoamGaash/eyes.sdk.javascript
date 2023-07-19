@@ -1,11 +1,12 @@
 import {AbortController} from 'abort-controller'
 import {Builder} from 'selenium-webdriver'
 import {Command} from 'selenium-webdriver/lib/command'
+import {makeLogger} from '@applitools/logger'
 import {makeServer} from '../../src/server'
-import * as utils from '@applitools/utils'
 import req from '@applitools/req'
 import nock from 'nock'
 import assert from 'assert'
+import * as utils from '@applitools/utils'
 
 describe('server', () => {
   let proxy: any
@@ -16,7 +17,7 @@ describe('server', () => {
   })
 
   it('proxies webdriver requests', async () => {
-    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}})
+    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}, logger: makeLogger()})
 
     nock('https://exec-wus.applitools.com')
       .persist()
@@ -31,8 +32,39 @@ describe('server', () => {
     await driver.quit()
   })
 
+  it('proxies webdriver requests to regional server', async () => {
+    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}, logger: makeLogger()})
+
+    nock('https://exec-wus.applitools.com').persist().post('/session').reply(403, {value: null})
+
+    nock('https://exec-au.applitools.com')
+      .persist()
+      .post('/session')
+      .reply(200, {value: {capabilities: {}, sessionId: 'session-guid'}})
+    nock('https://exec-au.applitools.com').persist().delete('/session/session-guid').reply(200, {value: null})
+
+    const driver = await new Builder()
+      .withCapabilities({browserName: 'chrome', 'applitools:region': 'australia'})
+      .usingServer(proxy.url)
+      .build()
+    const capabilities = await driver.getCapabilities()
+    assert.strictEqual(capabilities.get('applitools:isECClient'), true)
+    await driver.quit()
+  })
+
+  it('fails if provided unknown region region', async () => {
+    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}, logger: makeLogger()})
+    await assert.rejects(
+      new Builder()
+        .withCapabilities({browserName: 'chrome', 'applitools:region': 'europe'})
+        .usingServer(proxy.url)
+        .build(),
+      (err: Error) => err.message === 'Failed to create session in unknown region europe',
+    )
+  })
+
   it('performs retries on concurrency and availability errors', async () => {
-    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}})
+    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}, logger: makeLogger()})
 
     let retries = 0
     nock('https://exec-wus.applitools.com')
@@ -66,6 +98,7 @@ describe('server', () => {
         serverUrl: 'https://exec-wus.applitools.com',
         options: {apiKey: 'api-key', eyesServerUrl: 'http://server.url'},
       },
+      logger: makeLogger(),
     })
 
     nock('https://exec-wus.applitools.com')
@@ -97,7 +130,7 @@ describe('server', () => {
   })
 
   it('adds `applitools:` capabilities from provided `applitools:options` capability', async () => {
-    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}})
+    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}, logger: makeLogger()})
 
     nock('https://exec-wus.applitools.com')
       .persist()
@@ -135,7 +168,8 @@ describe('server', () => {
 
   it('creates new tunnel when session is successfully created', async () => {
     proxy = await makeServer({
-      settings: {serverUrl: 'https://exec-wus.applitools.com', tunnel: {serverUrl: 'http://eg-tunnel'}},
+      settings: {serverUrl: 'https://exec-wus.applitools.com', tunnel: {serviceUrl: 'http://eg-tunnel'}},
+      logger: makeLogger(),
     })
 
     nock('https://exec-wus.applitools.com')
@@ -162,7 +196,8 @@ describe('server', () => {
 
   it('fails if new tunnel was not created', async () => {
     proxy = await makeServer({
-      settings: {serverUrl: 'https://exec-wus.applitools.com', tunnel: {serverUrl: 'http://eg-tunnel'}},
+      settings: {serverUrl: 'https://exec-wus.applitools.com', tunnel: {serviceUrl: 'http://eg-tunnel'}},
+      logger: makeLogger(),
     })
 
     nock('https://exec-wus.applitools.com')
@@ -174,7 +209,7 @@ describe('server', () => {
 
     nock('http://eg-tunnel').persist().post('/tunnels').reply(401, {message: 'UNAUTHORIZED'})
 
-    assert.rejects(
+    await assert.rejects(
       new Builder().withCapabilities({browserName: 'chrome', 'applitools:tunnel': true}).usingServer(proxy.url).build(),
       (err: Error) => err.message.includes('UNAUTHORIZED'),
     )
@@ -184,8 +219,9 @@ describe('server', () => {
     proxy = await makeServer({
       settings: {
         serverUrl: 'https://exec-wus.applitools.com',
-        tunnel: {serverUrl: 'http://eg-tunnel', pool: {timeout: {idle: 0}}},
+        tunnel: {serviceUrl: 'http://eg-tunnel', pool: {timeout: {idle: 0}}},
       },
+      logger: makeLogger(),
     })
 
     nock('https://exec-wus.applitools.com')
@@ -217,7 +253,7 @@ describe('server', () => {
   })
 
   it('aborts proxy request if incoming request was aborted', async () => {
-    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}})
+    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}, logger: makeLogger()})
 
     let count = 0
     nock('https://exec-wus.applitools.com')
@@ -255,7 +291,7 @@ describe('server', () => {
   })
 
   it('queue create session requests if they need retry', async () => {
-    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}})
+    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}, logger: makeLogger()})
 
     let runningCount = 0
     nock('https://exec-wus.applitools.com')
@@ -288,7 +324,7 @@ describe('server', () => {
   })
 
   it('returns session details', async () => {
-    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}})
+    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}, logger: makeLogger()})
     const sessionId = 'session-guid'
     nock('https://exec-wus.applitools.com')
       .persist()
@@ -314,6 +350,7 @@ describe('server', () => {
   it('find element works with self healing', async () => {
     proxy = await makeServer({
       settings: {serverUrl: 'https://exec-wus.applitools.com', options: {useSelfHealing: true}},
+      logger: makeLogger(),
     })
     const expected = {
       successfulSelector: {using: 'css selector', value: 'actual-selector'},
@@ -341,5 +378,25 @@ describe('server', () => {
     assert.deepStrictEqual(result, [expected])
     const noResult: any[] = await driver.executeScript('applitools:metadata')
     assert.deepStrictEqual(noResult, [])
+  })
+
+  it('returns content-type for custom script', async () => {
+    proxy = await makeServer({settings: {serverUrl: 'https://exec-wus.applitools.com'}, logger: makeLogger()})
+
+    const sessionId = 'session-guid'
+    nock('https://exec-wus.applitools.com')
+      .persist()
+      .post('/session')
+      .reply(200, {value: {capabilities: {}, sessionId}})
+
+    const driver = await new Builder().forBrowser('chrome').usingServer(proxy.url).build()
+    const session = await driver.getSession()
+    const response = await req(`${proxy.url}/session/${session.getId()}/execute/sync`, {
+      method: 'post',
+      body: {script: 'applitools:metadata', args: []},
+    })
+
+    assert.strictEqual(response.status, 200)
+    assert.strictEqual(response.headers.get('content-type'), 'application/json')
   })
 })

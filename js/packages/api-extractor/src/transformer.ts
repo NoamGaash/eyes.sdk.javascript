@@ -44,6 +44,7 @@ export default function transformer(
   const exports = {
     names: new Map<string, {name: string; type: ts.Type; symbol: ts.Symbol}>(), // by names
     types: new Map<ts.Type, {name: string; type: ts.Type; symbol: ts.Symbol}>(), // by types
+    unions: new Map<ts.UnionType, {name: string; type: ts.UnionType; symbol: ts.Symbol}>(), // by union types
     symbols: new Map<ts.Symbol, {name: string; type: ts.Type; symbol: ts.Symbol}>(), // by symbols
   }
   // collection of symbols that should be replaced with some other type from entry point imports
@@ -74,6 +75,7 @@ export default function transformer(
         if (name !== 'default' && name !== 'export=') {
           exports.symbols.set(symbol, exported)
           exports.types.set(type, exported)
+          if (type.isUnion()) exports.unions.set(type, {name, type, symbol})
         }
 
         // some descendant types could replace their ancestors, if ancestor could not be referenced (e.g. base class is shadowed by its derivative class)
@@ -272,7 +274,7 @@ export default function transformer(
     const sourceFile = symbol.declarations[0].getSourceFile()
     const fileName = sourceFile.fileName
     const dirName = fileName.includes('/node_modules/')
-      ? sourceFile.fileName.replace(/\/node_modules\/.*$/, '')
+      ? sourceFile.fileName.replace(/\/node_modules\/(?!.*\/node_modules\/)(.*)$/, '')
       : program.getCurrentDirectory()
     const moduleName = config.allowModules?.find(moduleName => {
       if (parentSymbol.getName() === `"${moduleName}"`) return true
@@ -288,12 +290,13 @@ export default function transformer(
   }
 
   function getPropertyName(symbol: ts.Symbol): string | ts.PropertyName {
-    if (symbol.nameType && isSymbolType(symbol.nameType)) {
+    if (symbol.links?.nameType && isSymbolType(symbol.links.nameType)) {
       return ts.factory.createComputedPropertyName(
-        ts.factory.createIdentifier(`Symbol.${symbol.nameType.symbol.getName()}`),
+        ts.factory.createIdentifier(`Symbol.${symbol.links.nameType.symbol.getName()}`),
       )
     }
-    const name = symbol.nameType && isStringLiteral(symbol.nameType) ? symbol.nameType.value : symbol.getName()
+    const name =
+      symbol.links?.nameType && isStringLiteral(symbol.links.nameType) ? symbol.links.nameType.value : symbol.getName()
     return !/^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(name)
       ? ts.factory.createStringLiteral(name, true /* isSingleQuoted */)
       : name
@@ -534,7 +537,19 @@ export default function transformer(
         typeNodes.push(createTypeNode({type: checker.getBaseTypeOfLiteralType(type.types[index]), node}))
         index += 1
       } else {
-        typeNodes.push(createTypeNode({type: type.types[index], node}))
+        // if some of the items of the union overlap with all items of one of the exported unions use reference to the exported union instead
+        const reducedUnion = Array.from(exports.unions.values()).find(exportedUnion => {
+          return (
+            exportedUnion.symbol.declarations.every(declaration => declaration !== node) &&
+            exportedUnion.type.types.every((exportedType, offset) => exportedType === type.types[index + offset])
+          )
+        })
+        if (reducedUnion) {
+          index += reducedUnion.type.types.length - 1
+          typeNodes.push(ts.factory.createTypeReferenceNode(reducedUnion.name))
+        } else {
+          typeNodes.push(createTypeNode({type: type.types[index], node}))
+        }
       }
     }
     return ts.factory.createUnionTypeNode(typeNodes)
@@ -679,14 +694,18 @@ export default function transformer(
       if (!ts.isUnionTypeNode(parameter.type)) {
         return parameters.map(group => [...group, parameter])
       }
+      const undefinedTypeNode = parameter.questionToken
+        ? parameter.type.types.find(typeNode => typeNode.kind === ts.SyntaxKind.UndefinedKeyword)
+        : null
       return parameter.type.types.flatMap(typeNode => {
+        if (typeNode === undefinedTypeNode) return []
         return parameters.map(parameters => {
           const parameterDeclaration = ts.factory.createParameterDeclaration(
             parameter.modifiers,
             parameter.dotDotDotToken,
             parameter.name,
             parameter.questionToken,
-            typeNode,
+            undefinedTypeNode ? ts.factory.createUnionTypeNode([undefinedTypeNode, typeNode]) : typeNode,
             parameter.initializer,
           )
           return [...parameters, parameterDeclaration]

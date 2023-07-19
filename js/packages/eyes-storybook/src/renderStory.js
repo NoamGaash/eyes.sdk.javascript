@@ -15,15 +15,9 @@ function makeRenderStory({
   const throttle = throat(storyDataGap);
   return function renderStory({story, snapshots, url}) {
     const config = story.config;
-    const {name, kind, parameters, hasPlayFunction} = story;
+    const {name, kind, hasPlayFunction} = story;
     const baselineName = story.baselineName;
     const title = story.storyTitle;
-    const eyesParameters = (parameters && parameters.eyes) || {};
-    const eyesOptions = {
-      ...config,
-      ...eyesParameters,
-      properties: [...(config.properties || []), ...(eyesParameters.properties || [])],
-    };
     const {
       ignoreDisplacements,
       ignoreRegions,
@@ -58,7 +52,7 @@ function makeRenderStory({
       ignoreCaret,
       matchLevel,
       ignoreBaseline,
-    } = eyesOptions;
+    } = config;
 
     if (sizeMode) {
       console.log(deprecationWarning({deprecatedThing: "'sizeMode'", newThing: "'target'"}));

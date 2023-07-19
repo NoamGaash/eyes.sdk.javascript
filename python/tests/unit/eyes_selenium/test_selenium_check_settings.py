@@ -5,9 +5,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement as SeleniumWebElement
 
 from applitools.common import FloatingBounds
+from applitools.common.fluent.target_path import TargetPath
 from applitools.selenium import AccessibilityRegionType, Region, Target
 from applitools.selenium.fluent import SeleniumCheckSettings
-from applitools.selenium.fluent.target_path import TargetPath
 
 
 def get_cs_from_method(method_name, *args, **kwargs):
@@ -286,3 +286,27 @@ def test_target_webview_id():
     cs = Target.webview("webviewId")
 
     assert cs.values.webview == "webviewId"
+
+
+def test_target_screenshot_mode_default():
+    cs = Target.window()
+
+    assert cs.values.screenshot_mode is None
+
+
+def test_target_use_system_screenshot_no_args():
+    cs = Target.window().use_system_screenshot()
+
+    assert cs.values.screenshot_mode == "default"
+
+
+def test_target_use_system_screenshot_true():
+    cs = Target.window().use_system_screenshot(True)
+
+    assert cs.values.screenshot_mode == "default"
+
+
+def test_target_use_system_screenshot_false():
+    cs = Target.window().use_system_screenshot(False)
+
+    assert cs.values.screenshot_mode == "applitools-lib"

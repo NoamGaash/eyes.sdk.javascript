@@ -1,0 +1,312 @@
+name: CI
+
+run-name: CI (${{github.event.pull_request.title}})
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review]
+    branches: [master]
+
+concurrency:
+  group: ci-${{github.event.pull_request.head.ref}}
+  cancel-in-progress: true
+
+env:
+  FORCE_COLOR: 3
+  DISPLAY: ':99'
+  NPM_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+  APPLITOOLS_API_KEY: ${{secrets.APPLITOOLS_API_KEY}}
+  APPLITOOLS_API_KEY_READ: ${{secrets.APPLITOOLS_API_KEY_READ}}
+  APPLITOOLS_API_KEY_TEST_EYES: ${{secrets.APPLITOOLS_API_KEY_TEST_EYES}}
+  SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+  SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+  BROWSERSTACK_USERNAME: applitools
+  BROWSERSTACK_ACCESS_KEY: ${{secrets.BROWSERSTACK_ACCESS_KEY}}
+  AZURE_STORAGE_CONNECTION_STRING: ${{secrets.AZURE_STORAGE_CONNECTION_STRING}}
+
+jobs:
+  setup:
+    name: Setup
+    if: ${{github.actor != 'dependabot[bot]' && !github.event.pull_request.draft}}
+    runs-on: ubuntu-latest
+    outputs:
+      builds: ${{steps.setup.outputs.builds}}
+      tests: ${{steps.setup.outputs.tests}}
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+          fetch-depth: 0
+      - name: Setup
+        uses: ./.github/actions/setup
+        id: setup
+        with:
+          type: ${{startsWith(github.event.pull_request.head.ref, 'release-please') && 'ci-prod' || 'ci-dev'}}
+  
+  js-build:
+    needs: [setup]
+    if: ${{fromJSON(needs.setup.outputs.builds).js}}
+    strategy:
+      fail-fast: false
+      matrix: 
+        include: ${{fromJSON(needs.setup.outputs.builds).js}}
+    name: Build / ${{matrix.display-name}}
+    timeout-minutes: 20
+    runs-on: ${{matrix.runner || 'ubuntu-latest'}}
+    container: ${{matrix.container}}
+    env: ${{matrix.env}}
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{matrix.node-version || 'lts/*'}}
+      - name: Yarn cache
+        uses: actions/cache@v3
+        with:
+          path: ./js/.yarn/cache
+          key: yarn-cache-${{hashFiles('./js/yarn.lock', './js/.yarnrc.yml')}}
+          restore-keys: yarn-cache-
+      - name: Restore build artifacts
+        if: ${{join(matrix.builds)}}
+        uses: ./.github/actions/storage/restore
+        with:
+          name: ${{join(matrix.builds)}}
+          wait: true
+      - name: Build
+        uses: ./.github/actions/js/build
+        with:
+          working-directory: ${{matrix.working-directory}}
+          shell: ${{matrix.shell || 'bash'}}
+          build-type: ${{matrix.build-type}}
+      - name: Save build artifacts
+        if: ${{matrix.key && matrix.artifacts}}
+        uses: ./.github/actions/storage/save
+        with: 
+          name: ${{matrix.key}}
+          path: ${{join(matrix.artifacts)}}
+
+  js-test:
+    needs: [setup, js-build]
+    if: ${{fromJSON(needs.setup.outputs.tests).js}}
+    strategy:
+      fail-fast: false
+      matrix: 
+        include: ${{fromJSON(needs.setup.outputs.tests).js}}
+    name: Test / ${{matrix.display-name}}
+    timeout-minutes: 70
+    runs-on: ${{matrix.runner || 'ubuntu-latest'}}
+    container: ${{matrix.container}}
+    env: ${{matrix.env}}
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{matrix.node-version || 'lts/*'}}
+      - name: Yarn cache
+        uses: actions/cache@v3
+        with:
+          path: ./js/.yarn/cache
+          key: yarn-cache-${{hashFiles('./js/yarn.lock', '.yarnrc.yml')}}
+          restore-keys: yarn-cache-
+      - name: Restore build artifacts
+        if: ${{join(matrix.builds)}}
+        uses: ./.github/actions/storage/restore
+        with:
+          name: ${{join(matrix.builds)}}
+      - name: Semaphore
+        if: ${{matrix.semaphore}}
+        uses: ./.github/actions/semaphore
+        with:
+          name: ${{matrix.semaphore}}
+          max-parallel: 3
+      - name: Run tests
+        uses: ./.github/actions/js/test
+        with:
+          working-directory: ${{matrix.working-directory}}
+          shell: ${{matrix.shell || 'bash'}}
+          framework-version: ${{matrix.framework-version}}
+          test-type: ${{matrix.test-type}}
+          build-type: ${{matrix.build-type}}
+          setup-type: ${{matrix.setup-type}}
+          parallel: ${{matrix.parallel}}
+      - name: Save testing artifacts
+        if: ${{always() && matrix.key && matrix.artifacts}}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{matrix.key}}
+          path: ${{join(matrix.artifacts)}}
+          retention-days: 2
+          if-no-files-found: ignore
+      - name: Sending report
+        if: ${{matrix.report}}
+        uses: ./.github/actions/bongo
+        with:
+          working-directory: ${{matrix.working-directory}}
+          shell: ${{matrix.shell || 'bash'}}
+          command: report
+          report-id: ${{matrix.name}}@${{matrix.package-version}}
+          name: ${{matrix.report.name}}
+          group: ${{matrix.report.group}}
+          params: ${{toJSON(matrix.report.params)}}
+          result-path: ${{matrix.report.result-path}}
+          meta-path: ${{matrix.report.meta-path}}
+
+  java-build:
+    needs: [setup]
+    if: ${{fromJSON(needs.setup.outputs.builds).java}}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{fromJSON(needs.setup.outputs.builds).java}}
+    name: Build / ${{matrix.display-name}}
+    timeout-minutes: 20
+    runs-on: ${{matrix.runner || 'ubuntu-latest'}}
+    container: ${{matrix.container}}
+    env: ${{matrix.env}}
+    steps:
+      - name: Install global tools
+        if: ${{matrix.container}}
+        run: |
+          if [ -f "/etc/alpine-release" ]; then
+            apk update
+            apk add --no-cache git git-lfs maven openjdk11 libstdc++ bash;
+            echo "JAVA_HOME=$(readlink -f /usr/bin/javac | sed 's:/bin/javac::')" >> $GITHUB_ENV
+          fi
+      - name: Check-out repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+          lfs: true
+      - name: Import GPG Private Key
+        run: |
+          cat <(echo -e "${{secrets.MAVEN_GPG_PRIVATE_KEY}}") | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
+      - name: Set up Java and Release Repository
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: ${{matrix.java-version || 11}}
+          server-id: ${{matrix.build-type}} # Value of the distributionManagement/repository/id field of the pom.xml
+          server-username: MAVEN_CENTRAL_USERNAME # env variable for username in deploy
+          server-password: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
+          gpg-private-key: ${{secrets.MAVEN_GPG_PRIVATE_KEY}} # Value of the GPG private key to import
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE # env variable for GPG private key passphrase
+      - name: Restore build artifacts
+        if: ${{join(matrix.builds)}}
+        uses: ./.github/actions/storage/restore
+        with:
+          name: ${{join(matrix.builds)}}
+          wait: true
+      - name: Build
+        uses: ./.github/actions/java/build
+        with:
+          working-directory: ${{matrix.working-directory}}
+          profile: ${{matrix.build-type}}
+        env:
+          MAVEN_USERNAME: ${{secrets.MAVEN_CENTRAL_USERNAME}}
+          MAVEN_CENTRAL_TOKEN: ${{secrets.MAVEN_CENTRAL_TOKEN}}
+          MAVEN_GPG_PASSPHRASE: ${{secrets.MAVEN_GPG_PASSPHRASE}}
+          GH_TOKEN: ${{github.token}}
+      - name: Save build artifacts
+        if: ${{matrix.key && matrix.artifacts}}
+        uses: ./.github/actions/storage/save
+        with:
+          name: ${{matrix.key}}
+          path: ${{join(matrix.artifacts)}}
+
+  java-test:
+    needs: [setup, java-build]
+    if: ${{fromJSON(needs.setup.outputs.tests).java}}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{fromJSON(needs.setup.outputs.tests).java}}
+    name: Test / ${{matrix.display-name}}
+    timeout-minutes: 45
+    runs-on: ${{matrix.runner || 'ubuntu-latest'}}
+    container: ${{matrix.container}}
+    env: ${{matrix.env}}
+    steps:
+      - name: Install global tools
+        if: ${{matrix.container}}
+        run: |
+          if [ -f "/etc/alpine-release" ]; then
+            apk update
+            apk add --no-cache git git-lfs maven openjdk11 libstdc++ bash;
+            echo "JAVA_HOME=$(readlink -f /usr/bin/javac | sed 's:/bin/javac::')" >> $GITHUB_ENV
+          fi
+      - name: Check-out repository
+        uses: actions/checkout@v3
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+          lfs: true
+      - name: Set up Java
+        if: ${{!matrix.container}}
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: ${{matrix.java-version || 11}}
+      - name: Restore build artifacts
+        if: ${{join(matrix.builds)}}
+        uses: ./.github/actions/storage/restore
+        with:
+          name: ${{join(matrix.builds)}}
+      - name: Semaphore
+        if: ${{matrix.semaphore}}
+        uses: ./.github/actions/semaphore
+        with:
+          name: ${{matrix.semaphore}}
+          max-parallel: 5
+      - name: Run Tests
+        uses: ./.github/actions/java/tests/
+        with:
+          working-directory: ${{matrix.working-directory}}
+          test-type: ${{matrix.test-type}}
+          grep: ${{matrix.grep}}
+        env:
+          APPLITOOLS_API_KEY: ${{secrets.APPLITOOLS_API_KEY}}
+      - name: Save testing artifacts
+        if: ${{always() && matrix.key && matrix.artifacts}}
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{matrix.key}}
+          path: ${{join(matrix.artifacts)}}
+          retention-days: 2
+          if-no-files-found: ignore
+#      - name: Sending report
+#        if: ${{matrix.report}}
+#        uses: ./.github/actions/bongo
+#        with:
+#          working-directory: ${{matrix.working-directory}}
+#          shell: ${{matrix.shell || 'bash'}}
+#          command: report
+#          name: ${{matrix.report.name}}
+#          group: ${{matrix.report.group}}
+#          report-id: ${{matrix.name}}@${{matrix.package-version}}
+#          result-path: ${{matrix.report.result-path || './reports'}}
+#          meta-path: ${{matrix.report.meta-path || './reports'}}
+
+  report:
+    needs: [setup, js-test, java-test]
+    if: (success() || failure()) && fromJSON(needs.setup.outputs.tests).*
+    name: Report
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check-out repository
+        uses: actions/checkout@v3
+      - name: Report
+        id: report
+        uses: ./.github/actions/report
+        with:
+          artifact: ${{join(fromJSON(needs.setup.outputs.tests).*.*.key)}}
+          path: |
+            ./report*.json

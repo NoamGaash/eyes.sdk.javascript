@@ -126,6 +126,7 @@ module Applitools
     boolean_field :enable_cross_origin_rendering
     boolean_field :dont_use_cookies
     boolean_field :dont_close_batches
+    string_field :screenshot_mode
 
     methods_to_delegate.delete(:batch_info)
     methods_to_delegate.delete(:batch_info=)
@@ -206,7 +207,9 @@ module Applitools
 
     # layoutBreakpoints?: boolean | number[]
     def layout_breakpoints=(value)
-      config_hash[:layout_breakpoints] = (value.is_a?(Array) && value.all? {|v| v.is_a?(Numeric)}) ? value : !!value
+      config_hash[:layout_breakpoints] = value if value === true || value === false
+      config_hash[:layout_breakpoints] = value if value.is_a?(Array) && value.all? {|v| v.is_a?(Numeric)}
+      config_hash[:layout_breakpoints] = value if value.is_a?(Hash)
     end
     def layout_breakpoints
       config_hash[:layout_breakpoints]

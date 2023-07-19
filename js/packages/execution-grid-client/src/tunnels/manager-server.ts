@@ -1,7 +1,9 @@
+import type {TunnelManagerSettings} from '../types'
+import {type Tunnel} from '@applitools/tunnel-client'
 import {createServer, type Server} from 'net'
 import {makeLogger} from '@applitools/logger'
 import {makeSocket, type Socket} from '@applitools/socket'
-import {makeTunnelManager, type TunnelManagerSettings} from './manager'
+import {makeTunnelManager} from './manager'
 import {fork} from 'child_process'
 import * as path from 'path'
 import * as os from 'os'
@@ -22,7 +24,7 @@ export type TunnelManagerServerOptions = {
 export async function makeTunnelManagerServer({
   settings,
   path,
-  idleTimeout = 600000, // 10min
+  idleTimeout = 600_000, // 10min
 }: TunnelManagerServerOptions): Promise<TunnelManagerServer> {
   const server = await new Promise<Server>((resolve, reject) => {
     const server = createServer().listen({path})
@@ -31,16 +33,18 @@ export async function makeTunnelManagerServer({
   })
   const logger = makeLogger({
     handler: {type: 'rolling file', name: 'ec-tunnel-manager', dirname: LOG_DIRNAME},
-    label: 'ec-tunnel-manager',
     level: 'info',
-    colors: false,
+    format: {
+      label: 'ec-tunnel-manager',
+      colors: false,
+    },
   })
   logger.log('Server is started')
   const manager = await makeTunnelManager({settings, logger})
 
   process.send?.({name: 'started', payload: {path}}) // NOTE: this is a part of the js specific protocol
 
-  let idle: NodeJS.Timeout | null
+  let idle: NodeJS.Timeout | void
   let serverClosed = false
   if (idleTimeout) idle = setTimeout(close, idleTimeout)
 
@@ -51,29 +55,36 @@ export async function makeTunnelManagerServer({
 
   const sockets = new Set<Socket>()
   server.on('connection', client => {
-    if (idle) {
-      clearTimeout(idle)
-      idle = null
-    }
+    const store = [] as Tunnel[][]
+    if (idle) idle = clearTimeout(idle)
     const socket = makeSocket(client, {transport: 'ipc', logger})
     sockets.add(socket)
-    socket.on('close', () => {
-      sockets.delete(socket)
-      if (sockets.size > 0 || serverClosed) return
-      idle = setTimeout(close, idleTimeout)
+    socket.on('close', async () => {
+      logger.log('Connection is closed, remaining tunnels are going to be released', store)
+      await Promise.all(store.map(manager.release)).catch(logger.error)
+      if (sockets.size === 0 && !serverClosed) idle = setTimeout(close, idleTimeout)
     })
 
-    socket.command('Tunnel.create', manager.create)
-    socket.command('Tunnel.destroy', manager.destroy)
-    socket.command('Tunnel.acquire', manager.acquire)
-    socket.command('Tunnel.release', manager.release)
+    socket.command('Tunnel.acquire', async credentials => {
+      const tunnels = await manager.acquire(credentials)
+      store.push(tunnels)
+      return tunnels
+    })
+    socket.command('Tunnel.release', async (tunnels: Tunnel[]) => {
+      await manager.release(tunnels)
+      const storeIndex = store.findIndex(storedTunnels =>
+        tunnels.every((tunnel, index) => tunnel.tunnelId === storedTunnels[index].tunnelId),
+      )
+      tunnels.splice(storeIndex, 1)
+    })
   })
 
   return {close}
 
   async function close() {
+    logger.log('Server is going to be closed')
     server.close()
-    manager.close()
+    await manager.close()
     process.kill(0)
   }
 }

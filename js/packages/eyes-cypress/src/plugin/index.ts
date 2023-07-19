@@ -28,9 +28,9 @@ export type EyesPluginConfig = {
 }
 
 const {config, eyesConfig} = makeConfig()
-const logger = makeLogger({level: config.showLogs ? 'info' : 'silent', label: 'eyes'})
+const logger = makeLogger({level: config.showLogs ? 'info' : 'silent'})
 
-const startServer = makeStartServer({logger, eyesConfig})
+const startServer = makeStartServer({logger, eyesConfig, config})
 
 const pluginExport = makePluginExport({
   startServer,

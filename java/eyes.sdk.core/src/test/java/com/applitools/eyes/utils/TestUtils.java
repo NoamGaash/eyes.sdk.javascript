@@ -3,10 +3,12 @@ package com.applitools.eyes.utils;
 import com.applitools.connectivity.RestClient;
 import com.applitools.eyes.*;
 import com.applitools.eyes.metadata.BatchInfo;
+import com.applitools.eyes.metadata.DeviceNames;
 import com.applitools.eyes.metadata.SessionResults;
 import com.applitools.utils.ArgumentGuard;
 import com.applitools.utils.ClassVersionGetter;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,14 +17,12 @@ import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 public class TestUtils {
     public final static boolean runOnCI = System.getenv("CI") != null;
@@ -30,7 +30,7 @@ public class TestUtils {
     public final static String logsPath = System.getenv("APPLITOOLS_LOGS_PATH");
     public final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS");
     public final static boolean verboseLogs = !runOnCI || "true".equalsIgnoreCase(System.getenv("APPLITOOLS_VERBOSE_LOGS"));
-    public final static String REPORTING_DIR = System.getenv("BUILD_DIR") + "/report/";
+    public final static String REPORTING_DIR = System.getenv("REPORT_DIR") + "/report/";
     public static final int DEFAULT_CLIENT_TIMEOUT = 1000 * 60 * 5; // 5 minutes
 
     public static String initLogPath() {
@@ -65,6 +65,9 @@ public class TestUtils {
     }
 
     public static SessionResults getSessionResults(String apiKey, TestResults results) throws java.io.IOException {
+        ArgumentGuard.notNull(apiKey, "apiKey");
+        ArgumentGuard.notNull(results.getApiUrls().getSession(), "sessionUrl");
+        ArgumentGuard.notNull(results.getSecretToken(), "secretToken");
         String apiSessionUrl = results.getApiUrls().getSession();
         URI apiSessionUri = UriBuilder.fromUri(apiSessionUrl)
                 .queryParam("format", "json")
@@ -218,5 +221,31 @@ public class TestUtils {
         jsonMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
         return jsonMapper.readValue(srStr, BatchInfo.class);
+    }
+
+    public static HashMap<String, DeviceNames> getEmulatedDevicesSeizes() throws java.io.IOException {
+        String devicesUrl = "https://render-wus.applitools.com/emulated-devices-sizes";
+        URI apiSessionUri = UriBuilder.fromUri(devicesUrl)
+                .queryParam("format", "json")
+                .build();
+
+        RestClient client = new RestClient(new Logger(new StdoutLogHandler()), apiSessionUri, DEFAULT_CLIENT_TIMEOUT);
+
+        String srStr = client.sendHttpRequest(apiSessionUri.toString(), HttpMethod.GET, MediaType.APPLICATION_JSON).getBodyString();
+        ObjectMapper jsonMapper = new ObjectMapper();
+        jsonMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+        return jsonMapper.readValue(srStr, new TypeReference<HashMap<String, DeviceNames>>(){});
+    }
+
+    public static HashMap<String, DeviceNames> getDeviceNames() {
+        HashMap<String, DeviceNames> names;
+        try {
+            names = getEmulatedDevicesSeizes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return names;
     }
 }

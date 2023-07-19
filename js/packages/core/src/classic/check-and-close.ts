@@ -23,17 +23,19 @@ export function makeCheckAndClose<TSpec extends SpecType>({
   eyes,
   target: defaultTarget,
   spec,
-  logger: defaultLogger,
+  logger: mainLogger,
 }: Options<TSpec>) {
   return async function checkAndClose({
     target = defaultTarget,
     settings = {},
-    logger = defaultLogger,
+    logger = mainLogger,
   }: {
     target?: Target<TSpec>
     settings?: CheckSettings<TSpec> & CloseSettings
     logger?: Logger
   } = {}): Promise<TestResult[]> {
+    logger = logger.extend(mainLogger)
+
     logger.log('Command "checkAndClose" is called with settings', settings)
     if (!target) throw new Error('Method was called with no target')
     const baseEyes = await eyes.getBaseEyes({logger})
@@ -52,38 +54,54 @@ export function makeCheckAndClose<TSpec extends SpecType>({
         logger,
       })
     }
+    let baseTarget: BaseTarget
+    let baseSettings: BaseCheckSettings
     const {elementReferencesToCalculate, getBaseCheckSettings} = toBaseCheckSettings({settings})
-    const screenshot = await takeScreenshot({
-      driver,
-      settings: {...settings, regionsToCalculate: elementReferencesToCalculate},
-      logger,
-    })
-    const baseTarget = {
-      name: await driver.getTitle(),
-      source: await driver.getUrl(),
-      image: await screenshot.image.toPng(),
-      locationInViewport: utils.geometry.location(screenshot.region),
-      isTransformed: true,
-    } as BaseTarget
-    const baseSettings = getBaseCheckSettings({calculatedRegions: screenshot.calculatedRegions})
-    if (environment.isWeb && settings.sendDom) {
-      if (settings.fully) await screenshot.scrollingElement.setAttribute('data-applitools-scroll', 'true')
-      else await screenshot.element?.setAttribute('data-applitools-scroll', 'true')
-      baseTarget.dom = await takeDomCapture({driver, settings: {proxy: eyes.test.server.proxy}, logger}).catch(
-        () => undefined,
-      )
+    if (
+      environment.isWeb ||
+      !environment.isApplitoolsLib ||
+      settings.webview ||
+      settings.screenshotMode === 'default'
+    ) {
+      const screenshot = await takeScreenshot({
+        driver,
+        settings: {...settings, regionsToCalculate: elementReferencesToCalculate},
+        logger,
+      })
+      baseTarget = {
+        name: await driver.getTitle(),
+        source: await driver.getUrl(),
+        image: await screenshot.image.toPng(),
+        locationInViewport: utils.geometry.location(screenshot.region),
+        isTransformed: true,
+      }
+      baseSettings = getBaseCheckSettings({calculatedRegions: screenshot.calculatedRegions})
+      if (environment.isWeb && settings.sendDom) {
+        if (settings.fully) await screenshot.scrollingElement?.setAttribute('data-applitools-scroll', 'true')
+        else await screenshot.element?.setAttribute('data-applitools-scroll', 'true')
+        baseTarget.dom = await takeDomCapture({driver, settings: {proxy: eyes.test.server.proxy}, logger}).catch(
+          () => undefined,
+        )
+      }
+      if (settings.pageId) {
+        const scrollingElement = await driver.mainContext.getScrollingElement()
+        const scrollingOffset =
+          !scrollingElement || environment.isNative ? {x: 0, y: 0} : await scrollingElement.getScrollOffset()
+        baseTarget.locationInView = utils.geometry.offset(scrollingOffset, screenshot.region)
+        baseTarget.fullViewSize = scrollingElement
+          ? await scrollingElement.getContentSize()
+          : await driver.getViewportSize()
+      }
+      await screenshot.restoreState()
+    } else {
+      const nmlClient = await eyes.core.getNMLClient({config: eyes.test.server, driver, logger})
+      const screenshot = await nmlClient.takeScreenshot({
+        settings: {name: settings.name, waitBeforeCapture: settings.waitBeforeCapture, fully: settings.fully},
+        logger,
+      })
+      baseTarget = {image: screenshot.image, isTransformed: true}
+      baseSettings = getBaseCheckSettings({calculatedRegions: []})
     }
-    if (settings.pageId) {
-      const scrollingElement = await driver.mainContext.getScrollingElement()
-      const scrollingOffset =
-        !scrollingElement || environment.isNative ? {x: 0, y: 0} : await scrollingElement.getScrollOffset()
-      baseTarget.locationInView = utils.geometry.offset(scrollingOffset, screenshot.region)
-      baseTarget.fullViewSize = scrollingElement
-        ? await scrollingElement.getContentSize()
-        : await driver.getViewportSize()
-    }
-    await screenshot.restoreState()
-
     return (
       await Promise.all(
         baseEyes.map(baseEyes => baseEyes.checkAndClose({target: baseTarget, settings: baseSettings, logger})),

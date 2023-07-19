@@ -33,9 +33,12 @@ export type Environment = {
   platformVersion?: string
   deviceName?: string
 
+  isReliable?: boolean
+
   isW3C?: boolean
   isEC?: boolean
   isECClient?: boolean
+  isApplitoolsLib?: boolean
 
   isWeb?: boolean
   isNative?: boolean

@@ -2,9 +2,15 @@ import assert from 'assert'
 import nock from 'nock'
 import {Request} from 'node-fetch'
 import {req} from '../../src/req.js'
+import {AbortCode} from '../../src/req-errors.js'
+import {AbortController} from 'abort-controller'
 import * as utils from '@applitools/utils'
 
 describe('req', () => {
+  beforeEach(() => {
+    nock.cleanAll()
+  })
+
   it('works', async () => {
     nock('https://eyesapi.applitools.com').get('/api/hello').reply(200, {hello: 'world'})
     const response = await req('https://eyesapi.applitools.com/api/hello')
@@ -156,12 +162,78 @@ describe('req', () => {
     assert.deepStrictEqual(await response.json(), {hello: 'error'})
   })
 
-  it('aborts request on timeout', async () => {
+  it('retries on stuck request', async () => {
+    let index = 0
+    nock('https://eyesapi.applitools.com')
+      .get('/api/hello')
+      .reply(async () => {
+        index += 1
+        await new Promise(res => setTimeout(res, 2000))
+        return [200]
+      })
+      .persist()
+
+    const requestTimeout = 500
+    const connectionTimeout = 1100
+    const startedAt = Date.now()
+    await assert.rejects(
+      () =>
+        req('https://eyesapi.applitools.com/api/hello', {
+          retry: {codes: [AbortCode.requestTimeout]},
+          requestTimeout,
+          connectionTimeout,
+        }),
+      (error: Error) => error.constructor.name === 'ConnectionTimeoutError',
+    )
+    const duration = Date.now() - startedAt
+
+    assert.strictEqual(index, 3)
+    assert.ok(duration > connectionTimeout && duration < requestTimeout * index)
+  })
+
+  it('aborts request on connection timeout', async () => {
     nock('https://eyesapi.applitools.com').get('/api/hello').delay(1100).reply(200, {hello: 'world'})
 
     await assert.rejects(
-      () => req('https://eyesapi.applitools.com/api/hello', {timeout: 1000}),
-      error => error.constructor.name === 'AbortError',
+      () => req('https://eyesapi.applitools.com/api/hello', {connectionTimeout: 1000}),
+      (error: Error) => error.constructor.name === 'ConnectionTimeoutError',
+    )
+  })
+
+  it('aborts retry request on connection timeout', async () => {
+    nock('https://eyesapi.applitools.com').get('/api/hello').reply(500).persist()
+
+    await assert.rejects(
+      () =>
+        req('https://eyesapi.applitools.com/api/hello', {
+          retry: {validate: ({response}) => response?.status === 500},
+          connectionTimeout: 1000,
+        }),
+      (error: Error) => error.constructor.name === 'ConnectionTimeoutError',
+    )
+  })
+
+  it('aborts request if signal is already aborted', async () => {
+    nock('https://eyesapi.applitools.com').get('/api/hello').reply(500).persist()
+
+    const controller = new AbortController()
+    controller.abort()
+
+    await assert.rejects(
+      () => req('https://eyesapi.applitools.com/api/hello', {signal: controller.signal}),
+      (error: Error) => error.constructor.name === 'AbortError',
+    )
+  })
+
+  it('aborts request with timeout if signal is already aborted', async () => {
+    nock('https://eyesapi.applitools.com').get('/api/hello').reply(500).persist()
+
+    const controller = new AbortController()
+    controller.abort()
+
+    await assert.rejects(
+      () => req('https://eyesapi.applitools.com/api/hello', {signal: controller.signal, connectionTimeout: 1000}),
+      (error: Error) => error.constructor.name === 'AbortError',
     )
   })
 

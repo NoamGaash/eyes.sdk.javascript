@@ -52,10 +52,10 @@ export class Driver<T extends SpecType> {
   protected readonly _spec: SpecDriver<T>
 
   constructor(options: DriverOptions<T>) {
+    this._logger = makeLogger({logger: options.logger, format: {label: 'driver'}})
     this._customConfig = options.customConfig ?? {}
     this._guid = utils.general.guid()
     this._spec = options.spec
-    this._logger = options.logger?.extend({label: 'driver'}) ?? makeLogger({label: 'driver'})
     this._target = this._spec.transformDriver?.(options.driver) ?? options.driver
 
     if (!this._spec.isDriver(this._target)) {
@@ -66,9 +66,12 @@ export class Driver<T extends SpecType> {
       spec: this._spec,
       context: this._spec.extractContext?.(this._target) ?? (this._target as T['context']),
       driver: this,
-      logger: this._logger,
     })
     this._currentContext = this._mainContext
+  }
+
+  get logger() {
+    return this._logger
   }
 
   get target(): T['driver'] {
@@ -84,8 +87,17 @@ export class Driver<T extends SpecType> {
     return this._mainContext
   }
 
+  updateLogger(logger: Logger): void {
+    this._logger = logger.extend({label: 'driver'})
+  }
+
   updateCurrentContext(context: Context<T>): void {
     this._currentContext = context
+  }
+
+  async reloadPage(): Promise<this> {
+    await this.mainContext.execute(snippets.reloadPage).catch(() => null)
+    return this.refresh()
   }
 
   async refresh(): Promise<this> {
@@ -202,24 +214,25 @@ export class Driver<T extends SpecType> {
   async getCapabilities({force}: {force?: boolean} = {}): Promise<Capabilities | null> {
     if (this._driverInfo?.capabilities === undefined || force) {
       this._driverInfo ??= {}
+      await this._spec.getCapabilities?.(this.target)
       this._driverInfo.capabilities = (await this._spec.getCapabilities?.(this.target)) ?? null
       this._logger.log('Extracted driver capabilities', this._driverInfo.capabilities)
     }
     return this._driverInfo.capabilities
   }
 
-  async getUserAgent({force}: {force?: boolean} = {}): Promise<UserAgent | null> {
+  async getUserAgent({force}: {force?: boolean} = {}): Promise<UserAgent | undefined> {
     if (this._driverInfo?.userAgent === undefined || force) {
       this._driverInfo ??= {}
       this._driverInfo.userAgent ??= (await this.currentContext.executePoll(snippets.getUserAgent)) ?? null
       this._logger.log('Extracted user agent', this._driverInfo.userAgent)
     }
-    return this._driverInfo.userAgent ?? null
+    return this._driverInfo.userAgent ?? undefined
   }
 
-  async getUserAgentLegacy({force}: {force?: boolean} = {}): Promise<string | null> {
+  async getUserAgentLegacy({force}: {force?: boolean} = {}): Promise<string | undefined> {
     const userAgent = await this.getUserAgent({force})
-    return utils.types.isObject(userAgent) ? userAgent?.legacy ?? null : userAgent
+    return utils.types.isObject(userAgent) ? userAgent?.legacy : userAgent
   }
 
   async getEnvironment(): Promise<Environment> {
@@ -261,10 +274,10 @@ export class Driver<T extends SpecType> {
 
       if (this._environment.browserName) {
         this._environment.isIE = /(internet explorer|ie)/i.test(this._environment.browserName)
-        this._environment.isEdgeLegacy =
-          /edge/i.test(this._environment.browserName) && Number(this._environment.browserVersion) <= 44
         this._environment.isEdge =
-          /edge/i.test(this._environment.browserName) && Number(this._environment.browserVersion) > 44
+          /edge/i.test(this._environment.browserName) && Number.parseInt(this._environment.browserVersion!) >= 79
+        this._environment.isEdgeLegacy =
+          /edge/i.test(this._environment.browserName) && Number.parseInt(this._environment.browserVersion!) < 79
         this._environment.isChrome = /chrome/i.test(this._environment.browserName)
         this._environment.isChromium = this._environment.isChrome || this._environment.isEdge
       }
@@ -419,7 +432,10 @@ export class Driver<T extends SpecType> {
 
       if (environment.isWeb) {
         const browserViewport: Viewport = await this.execute(snippets.getViewport)
-        this._viewport = {...browserViewport, ...this._viewport}
+        this._viewport.viewportSize ??= browserViewport.viewportSize
+        this._viewport.pixelRatio ??= browserViewport.pixelRatio
+        this._viewport.viewportScale ??= browserViewport.viewportScale
+        this._viewport.orientation ??= browserViewport.orientation
       }
 
       this._viewport.pixelRatio ??= 1
@@ -457,8 +473,8 @@ export class Driver<T extends SpecType> {
       const environment = await this.getEnvironment()
       this._logger.log(`Extracting helper for ${environment.isIOS ? 'ios' : 'android'}`)
       this._helper = environment.isIOS
-        ? await HelperIOS.make({spec: this._spec, driver: this, logger: this._logger})
-        : await HelperAndroid.make({spec: this._spec, driver: this, logger: this._logger})
+        ? await HelperIOS.make({spec: this._spec, driver: this})
+        : await HelperAndroid.make({spec: this._spec, driver: this})
       this._logger.log(`Extracted helper of type ${this._helper?.name}`)
     }
     this._logger.log(`Returning helper for of type ${this._helper?.name ?? null}`)
@@ -733,8 +749,8 @@ export class Driver<T extends SpecType> {
     let attempt = 0
     while (attempt++ < 3) {
       const requiredWindowSize = {
-        width: currentWindowSize.width + (requiredViewportSize.width - currentViewportSize.width),
-        height: currentWindowSize.height + (requiredViewportSize.height - currentViewportSize.height),
+        width: Math.max(0, currentWindowSize.width + (requiredViewportSize.width - currentViewportSize.width)),
+        height: Math.max(0, currentWindowSize.height + (requiredViewportSize.height - currentViewportSize.height)),
       }
       this._logger.log(`Attempt #${attempt} to set viewport size by setting window size to`, requiredWindowSize)
       await this._spec.setWindowSize!(this.target, requiredWindowSize)
@@ -871,5 +887,6 @@ export async function makeDriver<T extends SpecType>(options: {
   logger?: Logger
 }): Promise<Driver<T>> {
   const driver = options.driver instanceof Driver ? options.driver : new Driver(options as DriverOptions<T>)
+  if (options.logger) driver.updateLogger(options.logger)
   return driver.refresh()
 }

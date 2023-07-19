@@ -3,6 +3,160 @@
 ## Unreleased
 
 
+
+## [3.37.2](https://github.com/applitools/eyes.sdk.javascript1/compare/js/eyes-storybook@3.37.1...js/eyes-storybook@3.37.2) (2023-07-18)
+
+
+### Performance Improvements
+
+* additional runtime improvements ([8a33a83](https://github.com/applitools/eyes.sdk.javascript1/commit/8a33a83d4911bdd3bebff646c983d5a2de512763))
+
+## [3.37.1](https://github.com/applitools/eyes.sdk.javascript1/compare/js/eyes-storybook@3.37.0...js/eyes-storybook@3.37.1) (2023-07-18)
+
+
+### Performance Improvements
+
+* improve runtime performance ([#1763](https://github.com/applitools/eyes.sdk.javascript1/issues/1763)) ([3efcc85](https://github.com/applitools/eyes.sdk.javascript1/commit/3efcc85df1d8ec09884bd6bae26758cc4d649f97))
+
+## [3.37.0](https://github.com/applitools/eyes.sdk.javascript1/compare/js/eyes-storybook@3.36.0...js/eyes-storybook@3.37.0) (2023-07-18)
+
+
+### Features
+
+* support retries on stuck requests ([#1773](https://github.com/applitools/eyes.sdk.javascript1/issues/1773)) ([4db470e](https://github.com/applitools/eyes.sdk.javascript1/commit/4db470ee6829c13cfaf7e521ef91e20854266edd))
+
+
+### Bug Fixes
+
+* fix lint config and remove extranous deps ([aea605c](https://github.com/applitools/eyes.sdk.javascript1/commit/aea605c4a1d6cca37d84b464af369cdbff3c6234))
+
+
+### Dependencies
+
+* @applitools/req bumped from 1.4.0 to 1.5.0
+  #### Features
+
+  * support retries on stuck requests ([be673bb](https://github.com/applitools/eyes.sdk.javascript1/commit/be673bb505c9b21d6aea37d86e88513e95e3cb02))
+* @applitools/ufg-client bumped from 1.4.1 to 1.5.0
+  #### Features
+
+  * support retries on stuck requests ([be673bb](https://github.com/applitools/eyes.sdk.javascript1/commit/be673bb505c9b21d6aea37d86e88513e95e3cb02))
+
+
+
+* @applitools/core bumped to 3.6.2
+
+* @applitools/core-base bumped from 1.4.0 to 1.4.1
+
+* @applitools/ec-client bumped from 1.7.0 to 1.7.1
+
+* @applitools/tunnel-client bumped from 1.1.0 to 1.1.1
+
+* @applitools/nml-client bumped from 1.5.2 to 1.5.3
+
+
+## [3.36.0](https://github.com/applitools/eyes.sdk.javascript1/compare/js/eyes-storybook-v3.35.1...js/eyes-storybook@3.36.0) (2023-07-05)
+
+
+### Features
+
+* added support for storybook installed in parent module ([#1060](https://github.com/applitools/eyes.sdk.javascript1/issues/1060)) ([e2b9fbb](https://github.com/applitools/eyes.sdk.javascript1/commit/e2b9fbbb41938b2363a2c675874ad28e41859076))
+* support dns caching ([#1680](https://github.com/applitools/eyes.sdk.javascript1/issues/1680)) ([9bbff34](https://github.com/applitools/eyes.sdk.javascript1/commit/9bbff34f50c9d18758b55a6bcb45571ca1148180))
+
+
+### Dependencies
+
+* @applitools/core bumped from 3.4.0 to 3.5.0
+  #### Features
+
+  * added auto applitools lib detection ([#1707](https://github.com/applitools/eyes.sdk.javascript1/issues/1707)) ([7d439b5](https://github.com/applitools/eyes.sdk.javascript1/commit/7d439b52af55f3b0596c9d35d6ba85c717448023))
+  * support dns caching ([#1680](https://github.com/applitools/eyes.sdk.javascript1/issues/1680)) ([9bbff34](https://github.com/applitools/eyes.sdk.javascript1/commit/9bbff34f50c9d18758b55a6bcb45571ca1148180))
+
+
+  #### Bug Fixes
+
+  * some fix ([660a137](https://github.com/applitools/eyes.sdk.javascript1/commit/660a1376a49dd28f8f399690502cd3d1f77665fa))
+
+
+
+* @applitools/core-base bumped from 1.2.1 to 1.3.0
+  #### Features
+
+  * support dns caching ([#1680](https://github.com/applitools/eyes.sdk.javascript1/issues/1680)) ([9bbff34](https://github.com/applitools/eyes.sdk.javascript1/commit/9bbff34f50c9d18758b55a6bcb45571ca1148180))
+
+
+
+* @applitools/req bumped from 1.3.3 to 1.4.0
+  #### Features
+
+  * support dns caching ([#1680](https://github.com/applitools/eyes.sdk.javascript1/issues/1680)) ([9bbff34](https://github.com/applitools/eyes.sdk.javascript1/commit/9bbff34f50c9d18758b55a6bcb45571ca1148180))
+* @applitools/driver bumped from 1.12.4 to 1.13.0
+  #### Features
+
+  * added auto applitools lib detection ([#1707](https://github.com/applitools/eyes.sdk.javascript1/issues/1707)) ([7d439b5](https://github.com/applitools/eyes.sdk.javascript1/commit/7d439b52af55f3b0596c9d35d6ba85c717448023))
+* @applitools/ec-client bumped from 1.5.0 to 1.6.0
+  #### Features
+
+  * added support of regional execution cloud servers ([#1711](https://github.com/applitools/eyes.sdk.javascript1/issues/1711)) ([2e26c69](https://github.com/applitools/eyes.sdk.javascript1/commit/2e26c6944bb15f6121fb37c1dba95aba162c1f6a))
+  * support dns caching ([#1680](https://github.com/applitools/eyes.sdk.javascript1/issues/1680)) ([9bbff34](https://github.com/applitools/eyes.sdk.javascript1/commit/9bbff34f50c9d18758b55a6bcb45571ca1148180))
+
+
+  #### Bug Fixes
+
+  * fixed auto tunnel cleanup after unexpected end of the process ([3c1ad08](https://github.com/applitools/eyes.sdk.javascript1/commit/3c1ad0837d2d3560becc6d89370aa878becb3270))
+
+
+
+* @applitools/tunnel-client bumped from 0.1.1 to 1.0.0
+  #### Features
+
+  * added binaries and made them available in jfrog ([92033fe](https://github.com/applitools/eyes.sdk.javascript1/commit/92033fed7edc58bbc4a4e37269068418fe3afc3d))
+  * release as 1.0.0 ([93bf312](https://github.com/applitools/eyes.sdk.javascript1/commit/93bf31205b07d19bc2cb4f50b974c7bad0f49cea))
+
+
+
+* @applitools/ufg-client bumped from 1.2.22 to 1.3.0
+  #### Features
+
+  * support dns caching ([#1680](https://github.com/applitools/eyes.sdk.javascript1/issues/1680)) ([9bbff34](https://github.com/applitools/eyes.sdk.javascript1/commit/9bbff34f50c9d18758b55a6bcb45571ca1148180))
+
+
+
+* @applitools/spec-driver-webdriver bumped from 1.0.36 to 1.0.37
+
+* @applitools/nml-client bumped from 1.5.0 to 1.5.1
+
+* @applitools/screenshoter bumped from 3.8.1 to 3.8.2
+
+* @applitools/spec-driver-puppeteer bumped from 1.1.67 to 1.1.68
+
+
+## 3.35.0 - 2023/6/13
+
+### Features
+### Bug fixes
+- Add support for variations in storybook 7
+- Increase timeout for rendering results polling
+- Add the option to not fail on visual differences using exitcode `nodiffs`
+
+## 3.34.2 - 2023/5/16
+
+### Features
+- Add support for reloading the page when using layoutBreakpoints
+### Bug fixes
+
+## 3.34.1 - 2023/5/9
+
+### Features
+### Bug fixes
+- Fix the issue where storybook v6 will not start if storybook cli is being used
+
+## 3.34.0 - 2023/5/4
+
+### Features
+- Add the option to send a list of browsers from the component configuration
+### Bug fixes
+
 ## 3.33.1 - 2023/4/26
 
 ### Features

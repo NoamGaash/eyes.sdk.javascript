@@ -1,6 +1,6 @@
 import {type Proxy} from '@applitools/req'
 import {type Batch, type FunctionalSession} from '@applitools/core-base'
-import {type Tunnel} from './tunnels/manager'
+import {type TunnelClientSettings, type Tunnel} from '@applitools/tunnel-client'
 
 export interface ECClient {
   readonly url: string
@@ -12,22 +12,17 @@ export interface ECClient {
 export interface ECClientSettings {
   serverUrl: string
   proxy?: Proxy
+  useDnsCache?: boolean
   options?: ECCapabilitiesOptions
   port?: number
   /** @internal */
-  tunnel?: {
-    serverUrl?: string
-    groupSize?: number
-    pool?: {
-      maxInuse?: number
-      timeout?: {idle?: number; expiration?: number}
-    }
-  }
+  tunnel?: TunnelManagerSettings
 }
 
 export interface ECCapabilitiesOptions {
   eyesServerUrl?: string
   apiKey?: string
+  region?: 'us-west' | 'australia'
   sessionName?: string
   appName?: string
   testName?: string
@@ -42,12 +37,9 @@ export interface ECCapabilitiesOptions {
 
 export interface ECSession {
   serverUrl: string
-  sessionId: string
   proxy?: Proxy
-  credentials: {
-    eyesServerUrl: string
-    apiKey: string
-  }
+  sessionId: string
+  credentials: {eyesServerUrl: string; apiKey: string}
   capabilities: Record<string, any>
   options: ECCapabilitiesOptions
   tunnels?: Tunnel[]
@@ -55,5 +47,13 @@ export interface ECSession {
   tests?: {
     current?: FunctionalSession
     ended?: FunctionalSession[]
+  }
+}
+
+export type TunnelManagerSettings = TunnelClientSettings & {
+  groupSize?: number
+  pool?: {
+    maxInuse?: number
+    timeout?: {idle?: number; expiration?: number}
   }
 }

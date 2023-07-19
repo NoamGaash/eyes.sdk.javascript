@@ -18,6 +18,7 @@ module Applitools
     #     waitBeforeCapture?: number,
     #     lazyLoad?: boolean | LazyLoadOptions
     #   }
+    # webview?: boolean | string
     json_fields :name,
       :disableBrowserFetching,
       :layoutBreakpoints,
@@ -28,7 +29,8 @@ module Applitools
       :variationGroupId,
       :timeout,
       :waitBeforeCapture,
-      :lazyLoad
+      :lazyLoad,
+      :webview
 
     # export type MatchSettings<TRegion> = {
     #   exact?: {
@@ -93,6 +95,8 @@ module Applitools
                 # :locationInView,
                 # :fullViewSize
 
+    json_fields :screenshotMode
+
     def initialize(*args)
       options = Applitools::Utils.extract_options! args
       options.keys.select {|k| options[k] && respond_to?("#{k}=") }.each {|k| send("#{k}=", options[k]) }
@@ -117,6 +121,7 @@ module Applitools
 
       self.accessibility_settings = eyes.accessibility_validation
       self.disable_browser_fetching = eyes.dont_fetch_resources
+      self.screenshot_mode = eyes.screenshot_mode
 
       self.accessibility_regions = target.accessibility_regions
       self.content_regions = target.content_regions
@@ -161,6 +166,7 @@ module Applitools
       self.variation_group_id = target.options[:variation_group_id]
       self.wait_before_capture = target.options[:wait_before_capture]
       self.lazy_load = target.options[:lazy_load]
+      self.webview = target.options[:webview]
       self.page_id = target.options[:page_id]
 
       self.scroll_root_element = target.options[:scroll_root_element] || eyes.scroll_root_element

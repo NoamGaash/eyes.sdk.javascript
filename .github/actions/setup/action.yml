@@ -1,0 +1,27 @@
+name: Setup
+
+inputs:
+  type:
+    description: setup for environment (test, ci-dev, ci-prod, release)
+    type: string
+  packages:
+    description: list of package names (aliases) with optional variations
+    type: string
+  tag:
+    description: list of release tags of the packages
+    type: string
+  env:
+    description: list of environment variables to add to every job
+    type: string
+
+outputs:
+  builds:
+    description: array of builds
+  tests:
+    description: array of tests
+  releases:
+    description: array of releases
+
+runs:
+  using: node16
+  main: dist/index.js

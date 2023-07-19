@@ -18,7 +18,7 @@ const {presult} = require('@applitools/functional-commons');
 const chalk = require('chalk');
 const {performance, timeItAsync} = makeTiming();
 
-(async function() {
+(async function () {
   try {
     const argv = yargs
       .usage('Usage: $0 [options]')
@@ -32,14 +32,20 @@ const {performance, timeItAsync} = makeTiming();
     console.log(`Using @applitools/eyes-storybook version ${VERSION}.\n`);
     const config = generateConfig({argv, defaultConfig, externalConfigParams});
     const logger = makeLogger({level: config.showLogs ? 'info' : 'silent', label: 'eyes'});
-    await validateAndPopulateConfig({config, logger, packagePath: process.cwd()});
+    const isVersion7 = await validateAndPopulateConfig({
+      config,
+      logger,
+      packagePath: process.cwd(),
+    });
     logger.log(`Running with the following config:\n${configDigest(config)}`);
     const [err, results] = await presult(
-      timeItAsync('eyesStorybook', () => eyesStorybook({config, logger, performance, timeItAsync})),
+      timeItAsync('eyesStorybook', () =>
+        eyesStorybook({config, logger, performance, timeItAsync, isVersion7}),
+      ),
     );
     if (err) {
       console.log(chalk.red(err.message));
-      process.exit(config.exitcode ? config.exitcode : 0);
+      process.exit(config.exitcode ? 1 : 0);
     } else {
       const totalTime = performance['eyesStorybook'];
       const {exitCode, summary, outputStr} = processResults({
@@ -47,6 +53,7 @@ const {performance, timeItAsync} = makeTiming();
         totalTime,
         testConcurrency: config.testConcurrency,
         saveNewTests: config.saveNewTests,
+        configExitCode: config.exitcode,
       });
       console.log(outputStr);
       if (config.jsonFilePath) {
@@ -58,7 +65,7 @@ const {performance, timeItAsync} = makeTiming();
       if (config.xmlFilePath) {
         handleXmlFile(config.xmlFilePath, summary, {totalTime});
       }
-      process.exit(config.exitcode ? exitCode : 0);
+      process.exit(exitCode);
     }
   } catch (ex) {
     console.log(ex);

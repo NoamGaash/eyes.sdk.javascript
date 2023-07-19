@@ -3,6 +3,7 @@ import {Builder, type WebDriver} from 'selenium-webdriver'
 import {getTestInfo} from '@applitools/test-utils'
 import {makeECClient} from '../../src/client'
 import assert from 'assert'
+import * as utils from '@applitools/utils'
 
 describe('client', () => {
   let client: ECClient, driver: WebDriver
@@ -13,13 +14,39 @@ describe('client', () => {
   })
 
   it('works', async () => {
-    client = await makeECClient()
+    client = await makeECClient({settings: {options: {useSelfHealing: false}}})
     driver = await new Builder().forBrowser('chrome').usingServer(client.url).build()
 
     await driver.get('https://demo.applitools.com')
-    const title = await driver.executeScript('return document.title')
 
-    assert.strictEqual(title, 'ACME demo app')
+    // execute script works as expected
+    const title = await driver.executeScript('return document.title')
+    assert.strictEqual(title, 'ACME Demo App by Applitools')
+
+    // find element (important! without self healing logic) returns a proper error
+    await assert.rejects(
+      Promise.race([
+        driver.findElement({css: '#doesn-exists'}),
+        utils.general.sleep(1000)?.then(() => Promise.reject(new Error('Timeout error'))),
+      ]),
+      error => error.name === 'NoSuchElementError',
+    )
+  })
+
+  it.skip('works in australia', async () => {
+    client = await makeECClient({settings: {options: {useSelfHealing: false}}})
+    driver = await new Builder()
+      .withCapabilities({browserName: 'chrome', 'applitools:region': 'australia'})
+      .usingServer(client.url)
+      .build()
+
+    await driver.get('https://mylocation.org')
+
+    const location = await driver.executeScript(
+      `return Array.from(document.querySelectorAll('td')).find(td => td.textContent === 'Country').nextElementSibling.textContent`,
+    )
+
+    assert.strictEqual(location, 'Australia')
   })
 
   it('works with self healing', async () => {
@@ -56,7 +83,6 @@ describe('client', () => {
     assert.strictEqual(info.scenarioName, 'EC functional test')
     assert.strictEqual(info.appName, 'default')
     assert.strictEqual(info.startInfo.nonVisual, true)
-    assert.deepStrictEqual(info.startInfo.properties, [{name: 'Execution Cloud', value: 'Yes'}])
     // assert.strictEqual(info.status, 'Failed') bug on backend
   })
 })

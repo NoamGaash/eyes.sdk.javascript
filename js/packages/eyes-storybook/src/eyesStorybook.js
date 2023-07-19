@@ -25,7 +25,6 @@ const {makeCore} = require('@applitools/core');
 const {makeUFGClient} = require('@applitools/ufg-client');
 const makeGetStoriesWithConfig = require('./getStoriesWithConfig');
 
-const CONCURRENT_PAGES = 3;
 const MAX_RETRIES = 10;
 const RETRY_INTERVAL = 1000;
 
@@ -35,6 +34,7 @@ async function eyesStorybook({
   performance,
   timeItAsync,
   outputStream = process.stderr,
+  isVersion7,
 }) {
   let memoryTimeout;
   let renderIE = false;
@@ -42,13 +42,18 @@ async function eyesStorybook({
   takeMemLoop();
   logger.log('eyesStorybook started');
 
+  const CONCURRENT_TABS = isNaN(Number(process.env.APPLITOOLS_CONCURRENT_TABS))
+    ? 3
+    : Number(process.env.APPLITOOLS_CONCURRENT_TABS);
+  logger.log(`Running with ${CONCURRENT_TABS} concurrent tabs`);
+
   const {
     storybookUrl,
-    waitBeforeCapture,
     readStoriesTimeout,
     reloadPagePerStory,
     proxy,
     testConcurrency,
+    useDnsCache,
   } = config;
 
   let iframeUrl;
@@ -59,6 +64,7 @@ async function eyesStorybook({
     throw new Error(`Storybook URL is not valid: ${storybookUrl}`);
   }
   const agentId = `eyes-storybook/${require('../package.json').version}`;
+  process.env.PUPPETEER_DISABLE_HEADLESS_WARNING = true;
   const browser = await puppeteer.launch(config.puppeteerOptions);
   logger.log('browser launched');
   const page = await browser.newPage();
@@ -80,6 +86,7 @@ async function eyesStorybook({
     serverUrl: config.serverUrl,
     apiKey: config.apiKey,
     agentId,
+    useDnsCache,
   };
   const [error, account] = await presult(core.getAccountInfo({settings, logger}));
 
@@ -98,6 +105,7 @@ async function eyesStorybook({
       ...account,
       proxy,
       concurrency: testConcurrency,
+      useDnsCache,
     },
     logger,
   });
@@ -112,7 +120,13 @@ async function eyesStorybook({
   });
   const pagePool = createPagePool({initPage, logger});
 
-  const doTakeDomSnapshots = async ({page, renderers, layoutBreakpoints, waitBeforeCapture}) => {
+  const doTakeDomSnapshots = async ({
+    page,
+    renderers,
+    layoutBreakpoints,
+    waitBeforeCapture,
+    disableBrowserFetching,
+  }) => {
     const driver = await new Driver({spec, driver: page, logger});
     const skipResources = client.getCachedResourceUrls();
     const result = await takeDomSnapshots({
@@ -125,6 +139,7 @@ async function eyesStorybook({
           renderers,
           waitBeforeCapture,
           skipResources,
+          disableBrowserFetching,
         },
       }),
       provides: {
@@ -144,13 +159,13 @@ async function eyesStorybook({
     },
   });
   try {
-    const [stories] = await Promise.all(
-      [getStoriesWithSpinner()].concat(
-        new Array(CONCURRENT_PAGES).fill().map(async () => {
-          const {pageId} = await pagePool.createPage();
-          pagePool.addToPool(pageId);
-        }),
-      ),
+    const stories = await getStoriesWithSpinner();
+
+    await Promise.all(
+      Array.from({length: CONCURRENT_TABS}, async () => {
+        const {pageId} = await pagePool.createPage();
+        pagePool.addToPool(pageId);
+      }),
     );
 
     const filteredStories = filterStories({stories, config});
@@ -175,7 +190,6 @@ async function eyesStorybook({
     const getStoryData = makeGetStoryData({
       logger,
       takeDomSnapshots: doTakeDomSnapshots,
-      waitBeforeCapture,
     });
     const closeSettings = {
       ...settings,
@@ -203,6 +217,7 @@ async function eyesStorybook({
       logger,
       stream: outputStream,
       pagePool,
+      isVersion7,
     });
 
     logger.log('finished creating functions');
@@ -236,6 +251,7 @@ async function eyesStorybook({
   } finally {
     logger.log('total time: ', performance['renderStories']);
     logger.log('perf results', performance);
+    pagePool.isClosed = true;
     await browser.close();
     clearTimeout(memoryTimeout);
   }

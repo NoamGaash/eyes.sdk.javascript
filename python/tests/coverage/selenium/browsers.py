@@ -1,6 +1,5 @@
 import pytest
 import selenium
-from pkg_resources import parse_version
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
@@ -9,7 +8,7 @@ from applitools.selenium import VisualGridRunner
 
 from . import sauce
 
-LEGACY_SELENIUM = parse_version(selenium.__version__) < parse_version("4")
+LEGACY_SELENIUM = int(selenium.__version__.split(".")[0]) < 4
 # Download driver during module import to avoid racy downloads by xdist workers
 GECKO_DRIVER = GeckoDriverManager().install()
 CHROME_DRIVER = ChromeDriverManager().install()
@@ -20,9 +19,8 @@ def chrome(eyes_runner_class):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
     if isinstance(eyes_runner_class, VisualGridRunner):
-        if LEGACY_SELENIUM:
-            options.capabilities.pop("platform")
-            options.capabilities.pop("version")
+        options.capabilities.pop("platform", None)
+        options.capabilities.pop("version", None)
         from applitools.selenium import Eyes
 
         url = Eyes.get_execution_cloud_url()
@@ -128,16 +126,9 @@ def safari_12(sauce_url, legacy, name_of_test):
         return webdriver.Remote(sauce_url, capabilities)
     else:
         if legacy:
-            from selenium.webdriver.safari.options import Options
-
-            options = Options()
-            options.set_capability("name", name_of_test)
-            options.set_capability("platform", "macOS 10.13")
-            options.set_capability("seleniumVersion", "3.4.0")
-            options.set_capability("version", "12.1")
+            pytest.skip("Safari 12 can only be accessed in legacy Selenium 3")
         else:
             raise NotImplementedError
-        return webdriver.Remote(command_executor=sauce_url, options=options)
 
 
 @pytest.fixture
