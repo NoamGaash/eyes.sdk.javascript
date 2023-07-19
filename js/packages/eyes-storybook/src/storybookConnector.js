@@ -97,7 +97,7 @@ class StorybookConnector extends EventEmitter {
           minutes && seconds ? ' and ' : ''
         }${
           seconds ? `${seconds} seconds` : ''
-        }.\nplease consider setting a higher timeout using the \`--startStorybookServerTimeout\` option.`,
+        }.\nPlease consider setting a higher timeout using the --startStorybookServerTimeout option (in seconds). For example: eyes-storybook --startStorybookServerTimeout 600`,
       );
     });
   }
