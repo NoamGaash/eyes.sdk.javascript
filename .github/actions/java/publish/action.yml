@@ -9,8 +9,7 @@ inputs:
   profile:
     description: Distribution management repository (snapshot, maven, jfrog)
     type: string
-    required: false
-    default: snapshot
+    required: true
 
 runs:
   using: composite
@@ -20,5 +19,5 @@ runs:
       working-directory: ${{inputs.working-directory}}
       shell: bash
       run: |
-        mvn --batch-mode -P ${{inputs.server}} deploy -DskipTests
+        mvn --batch-mode -P ${{inputs.profile}} deploy -DskipTests
         echo "Succesfully published Java SDKs"

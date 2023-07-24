@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.3.20](https://github.com/applitools/eyes.sdk.javascript1/compare/js/spec-driver-playwright@1.3.19...js/spec-driver-playwright@1.3.20) (2023-07-21)
+
+
+### Bug Fixes
+
+* fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+### Dependencies
+
+* @applitools/driver bumped to 1.13.3
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/logger bumped to 2.0.7
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+## [1.3.19](https://github.com/applitools/eyes.sdk.javascript1/compare/js/spec-driver-playwright@1.3.18...js/spec-driver-playwright@1.3.19) (2023-07-21)
+
+
+### Code Refactoring
+
+* ufg client ([#1780](https://github.com/applitools/eyes.sdk.javascript1/issues/1780)) ([d60cf16](https://github.com/applitools/eyes.sdk.javascript1/commit/d60cf1616741a96b152a1548760bb98116e5c3f9))
+
+
+### Dependencies
+
+
+
 ## [1.3.18](https://github.com/applitools/eyes.sdk.javascript1/compare/js/spec-driver-playwright@1.3.17...js/spec-driver-playwright@1.3.18) (2023-07-13)
 
 

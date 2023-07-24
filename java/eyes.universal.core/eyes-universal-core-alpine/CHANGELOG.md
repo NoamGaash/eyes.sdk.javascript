@@ -1,3 +1,13 @@
+# Changelog
+
+
+## [5.63.3](https://github.com/applitools/eyes.sdk.javascript1/compare/java/eyes-universal-core-alpine@5.63.2...java/eyes-universal-core-alpine@5.63.3) (2023-07-23)
+
+
+### Bug Fixes
+
+* internal fix ([ab88cd9](https://github.com/applitools/eyes.sdk.javascript1/commit/ab88cd9d8a2706a112d2e35ff8b1d63b3983a79b))
+
 ## [5.63.0] - 2023-07-13
 ### Features
 - 
@@ -34,7 +44,7 @@
 ## [5.58.0] - 2023-06-29
 ### Features
 - Added new API `setMobileCapabilities` for native Eyes.
-- Added new API `useSystemScreenshot` for native Eyes. 
+- Added new API `useSystemScreenshot` for native Eyes.
 ### Bug fixes
 -
 
@@ -72,7 +82,7 @@
 
 ## [5.52.0] - 2023-05-18
 ### Features
-- Add emulation device `Galaxy S22`. 
+- Add emulation device `Galaxy S22`.
 ### Bug fixes
 - Fixed layoutBreakpoints to accept Integer array input type.
 

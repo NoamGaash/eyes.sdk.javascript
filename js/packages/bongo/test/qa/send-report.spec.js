@@ -172,4 +172,30 @@ describe('report', () => {
       metaPath,
     })
   })
+
+  it('should create a report from raw file', async () => {
+    nock('http://applitools-quality-server.herokuapp.com')
+      .post('/result')
+      .matchHeader('Content-Type', 'application/json')
+      .reply((_uri, body) => {
+        assert.deepStrictEqual(body, {
+          group: 'selenium',
+          id: 'report-id',
+          sdk: 'java',
+          results: [
+            {passed: true, parameters: {}, test_name: 'testDefaultPadding'},
+            {passed: true, parameters: {}, test_name: 'testPaddingAllDirections'},
+            {passed: true, parameters: {}, test_name: 'testPaddingWhenAssigned'},
+          ],
+          sandbox: true,
+        })
+        return [200]
+      })
+
+    await sendTestReport({
+      reportId: 'report-id',
+      resultFormat: 'raw',
+      resultPath: path.resolve(fixtureDir, 'raw-report.json'),
+    })
+  })
 })

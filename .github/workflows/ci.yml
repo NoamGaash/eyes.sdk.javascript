@@ -178,7 +178,7 @@ jobs:
         run: |
           if [ -f "/etc/alpine-release" ]; then
             apk update
-            apk add --no-cache git git-lfs maven openjdk11 libstdc++ bash;
+            apk add --no-cache git git-lfs github-cli maven openjdk11 libstdc++ bash;
             echo "JAVA_HOME=$(readlink -f /usr/bin/javac | sed 's:/bin/javac::')" >> $GITHUB_ENV
           fi
       - name: Check-out repository
@@ -196,7 +196,7 @@ jobs:
           distribution: "temurin"
           java-version: ${{matrix.java-version || 11}}
           server-id: ${{matrix.build-type}} # Value of the distributionManagement/repository/id field of the pom.xml
-          server-username: MAVEN_CENTRAL_USERNAME # env variable for username in deploy
+          server-username: MAVEN_USERNAME # env variable for username in deploy
           server-password: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
           gpg-private-key: ${{secrets.MAVEN_GPG_PRIVATE_KEY}} # Value of the GPG private key to import
           gpg-passphrase: MAVEN_GPG_PASSPHRASE # env variable for GPG private key passphrase
@@ -241,7 +241,7 @@ jobs:
         run: |
           if [ -f "/etc/alpine-release" ]; then
             apk update
-            apk add --no-cache git git-lfs maven openjdk11 libstdc++ bash;
+            apk add --no-cache git git-lfs github-cli maven openjdk11 libstdc++ bash;
             echo "JAVA_HOME=$(readlink -f /usr/bin/javac | sed 's:/bin/javac::')" >> $GITHUB_ENV
           fi
       - name: Check-out repository
@@ -249,6 +249,10 @@ jobs:
         with:
           ref: ${{github.event.pull_request.head.ref}}
           lfs: true
+      - name: Set safe directory
+        if: ${{matrix.container}}
+        run: |
+          git config --system --add safe.directory "*"
       - name: Set up Java
         if: ${{!matrix.container}}
         uses: actions/setup-java@v3
@@ -273,6 +277,7 @@ jobs:
           test-type: ${{matrix.test-type}}
           grep: ${{matrix.grep}}
         env:
+          GH_TOKEN: ${{github.token}}
           APPLITOOLS_API_KEY: ${{secrets.APPLITOOLS_API_KEY}}
       - name: Save testing artifacts
         if: ${{always() && matrix.key && matrix.artifacts}}
@@ -282,18 +287,19 @@ jobs:
           path: ${{join(matrix.artifacts)}}
           retention-days: 2
           if-no-files-found: ignore
-#      - name: Sending report
-#        if: ${{matrix.report}}
-#        uses: ./.github/actions/bongo
-#        with:
-#          working-directory: ${{matrix.working-directory}}
-#          shell: ${{matrix.shell || 'bash'}}
-#          command: report
-#          name: ${{matrix.report.name}}
-#          group: ${{matrix.report.group}}
-#          report-id: ${{matrix.name}}@${{matrix.package-version}}
-#          result-path: ${{matrix.report.result-path || './reports'}}
-#          meta-path: ${{matrix.report.meta-path || './reports'}}
+      - name: Sending report
+        if: ${{matrix.report}}
+        uses: ./.github/actions/bongo
+        with:
+          working-directory: ${{matrix.working-directory}}
+          shell: ${{matrix.shell || 'bash'}}
+          command: report
+          name: ${{matrix.report.name}}
+          group: ${{matrix.report.group}}
+          report-id: ${{matrix.name}}@${{matrix.package-version}}
+          result-path: ${{matrix.report.result-path}}
+          meta-path: ${{matrix.report.meta-path}}
+          result-format: ${{matrix.report.format}}
 
   report:
     needs: [setup, js-test, java-test]

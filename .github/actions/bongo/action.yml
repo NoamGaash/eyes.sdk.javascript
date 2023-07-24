@@ -13,23 +13,31 @@ inputs:
     description: name of the reported entity
     type: string
     required: true
-  group:
-    description: group of the reported entity
-    type: string
-  release-version:
-    description: released version of the notification entity
-    type: string
-  params:
-    description: additional parameters will be added to every reported test
-    type: string
   report-id:
     description: id of the target report
     type: string
+
+  params:
+    description: additional parameters will be added to every reported test (report only)
+    type: string
   result-path:
-    description: path to the test results directory
+    description: path to the report file (report only)
+    type: string
+  result-format:
+    description: format of the report file (report only)
     type: string
   meta-path:
-    description: path to the test metadata directory
+    description: path to the test metadata file (report only)
+    type: string
+  group:
+    description: group of the reported entity (report only)
+    type: string
+
+  release-version:
+    description: released version of the notification entity (notification only)
+    type: string
+  recipient:
+    description: specific recipient for notification (notification only)
     type: string
   shell:
     description: shell to use
@@ -45,11 +53,14 @@ runs:
       shell: ${{inputs.shell}}
       run: |
         PARAMS=$(echo '${{inputs.params}}' |  tr '\n' ' ')
-        npx --package=@applitools/bongo@latest --yes -- bongo report --report-id="${{inputs.report-id || '$REPORT_ID'}}" --name="${{inputs.name}}" --group="${{inputs.group}}" --params="$PARAMS" --result-path="${{inputs.result-path || '$RESULT_PATH'}}" --meta-path="${{inputs.meta-path || '$META_PATH'}}"
+        for RESULT_PATH in ${{inputs.result-path || '$RESULT_PATH'}}
+        do
+          npx --package=@applitools/bongo@latest --yes -- bongo report --report-id="${{inputs.report-id || '$REPORT_ID'}}" --name="${{inputs.name}}" --group="${{inputs.group}}" --params="$PARAMS" --result-path="$RESULT_PATH" --result-format="${{inputs.result-format}}" --meta-path="${{inputs.meta-path || '$META_PATH'}}"
+        done
     - name: Sending notification
       if: ${{inputs.command == 'notification'}}
       working-directory: ${{inputs.working-directory}}
       shell: ${{inputs.shell}}
       run: |
-        npx --package=@applitools/bongo@latest --yes -- bongo send-release-notification --report-id="${{inputs.report-id || '$REPORT_ID'}}" --name="${{inputs.name}}" --release-version="${{inputs.release-version}}"
+        npx --package=@applitools/bongo@latest --yes -- bongo send-release-notification --report-id="${{inputs.report-id || '$REPORT_ID'}}" --name="${{inputs.name}}" --release-version="${{inputs.release-version}}" --recipient="${{inputs.recipient || '$RECIPIENT'}}"
 

@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.5.2](https://github.com/applitools/eyes.sdk.javascript1/compare/js/req@1.5.1...js/req@1.5.2) (2023-07-21)
+
+
+### Bug Fixes
+
+* fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+## [1.5.1](https://github.com/applitools/eyes.sdk.javascript1/compare/js/req@1.5.0...js/req@1.5.1) (2023-07-21)
+
+
+### Code Refactoring
+
+* ufg client ([#1780](https://github.com/applitools/eyes.sdk.javascript1/issues/1780)) ([d60cf16](https://github.com/applitools/eyes.sdk.javascript1/commit/d60cf1616741a96b152a1548760bb98116e5c3f9))
+
 ## [1.5.0](https://github.com/applitools/eyes.sdk.javascript1/compare/js/req@1.4.0...js/req@1.5.0) (2023-07-18)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@applitools/spec-driver-puppeteer",
-  "version": "1.1.69",
+  "version": "1.1.71",
   "keywords": [
     "puppeteer",
     "chrome devtools protocol",
@@ -40,8 +40,8 @@
     "up:framework": "run --top-level add-silent puppeteer"
   },
   "dependencies": {
-    "@applitools/driver": "1.13.1",
-    "@applitools/utils": "1.5.0"
+    "@applitools/driver": "workspace:*",
+    "@applitools/utils": "workspace:*"
   },
   "devDependencies": {
     "@applitools/api-extractor": "workspace:^",

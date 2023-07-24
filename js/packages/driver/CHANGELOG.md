@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.13.3](https://github.com/applitools/eyes.sdk.javascript1/compare/js/driver@1.13.2...js/driver@1.13.3) (2023-07-21)
+
+
+### Bug Fixes
+
+* fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+### Dependencies
+
+* @applitools/logger bumped to 2.0.7
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+## [1.13.2](https://github.com/applitools/eyes.sdk.javascript1/compare/js/driver@1.13.1...js/driver@1.13.2) (2023-07-21)
+
+
+### Bug Fixes
+
+* improve performance by not resetting the environment ([#1779](https://github.com/applitools/eyes.sdk.javascript1/issues/1779)) ([8178978](https://github.com/applitools/eyes.sdk.javascript1/commit/8178978e9443e60f3e8b10693395e4c80cb9e02f))
+
+
+### Code Refactoring
+
+* ufg client ([#1780](https://github.com/applitools/eyes.sdk.javascript1/issues/1780)) ([d60cf16](https://github.com/applitools/eyes.sdk.javascript1/commit/d60cf1616741a96b152a1548760bb98116e5c3f9))
+
+
+### Dependencies
+
+
+
 ## [1.13.1](https://github.com/applitools/eyes.sdk.javascript1/compare/js/driver@1.13.0...js/driver@1.13.1) (2023-07-13)
 
 
