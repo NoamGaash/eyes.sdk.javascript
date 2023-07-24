@@ -2,7 +2,7 @@
 
 RESULT=0
 
-echo "generating tests - selenium4"
+echo "generating tests - selenium 4"
 pushd coverage-tests
 # export UFG_ON_EG=true
 npm run generate

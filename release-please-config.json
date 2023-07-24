@@ -10,7 +10,12 @@
       "type": "rich-workspace",
       "workspaces": ["node", "maven"],
       "synthetic-dependencies": {
-        "java/eyes-universal-core": ["js/core"]
+        "java/eyes-universal-core-binaries": ["js/core"],
+        "java/eyes-universal-core-linux": ["js/core"],
+        "java/eyes-universal-core-alpine": ["js/core"],
+        "java/eyes-universal-core-arm": ["js/core"],
+        "java/eyes-universal-core-mac": ["js/core"],
+        "java/eyes-universal-core-win": ["js/core"]
       }
     }
   ],
@@ -21,9 +26,9 @@
     {"type": "perf", "section": "Performance Improvements"},
     {"type": "deps", "section": "Dependencies"},
     {"type": "revert", "section": "Reverts"},
+    {"type": "refactor", "section": "Code Refactoring"},
     {"type": "docs", "section": "Documentation", "hidden": true},
     {"type": "chore", "section": "Miscellaneous Chores", "hidden": true},
-    {"type": "refactor", "section": "Code Refactoring", "hidden": true},
     {"type": "test", "section": "Tests", "hidden": true},
     {"type": "build", "section": "Build System", "hidden": true},
     {"type": "ci", "section": "Continuous Integration", "hidden": true}
@@ -32,688 +37,1501 @@
     "js/packages/utils": {
       "release-type": "node",
       "component": "js/utils",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{package-version}}/{{hash}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{package-version}}/{{hash}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{package-version}}/{{hash}}"},
-        {"node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{package-version}}/{{hash}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/logger": {
       "release-type": "node",
       "component": "js/logger",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/socket": {
       "release-type": "node",
       "component": "js/socket",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/req": {
       "release-type": "node",
       "component": "js/req",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/image": {
       "release-type": "node",
       "component": "js/image",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/snippets": {
       "release-type": "node",
       "component": "js/snippets",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
-      "tests": [
-        {"artifacts": ["./logs/**/*"], "key": "{{component}}"}
-      ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
+      "tests": [{
+        "key": "{{component}}",
+        "artifacts": ["./logs/**/*"]
+      }],
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/spec-driver-webdriver": {
       "release-type": "node",
       "component": "js/spec-driver-webdriver",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/spec-driver-webdriverio": {
       "release-type": "node",
       "component": "js/spec-driver-webdriverio",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"framework-version": 5, "node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}/node-{{node-version}}"},
-        {"framework-version": 6, "node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}/node-{{node-version}}"},
-        {"framework-version": 7, "node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}/node-{{node-version}}"},
-        {"framework-version": 8, "node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}/node-{{node-version}}"},
-        {"framework-version": 8, "node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/framework-{{framework-version}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 5,
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/framework-{{framework-version}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 6,
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/framework-{{framework-version}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 7,
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/framework-{{framework-version}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 8,
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/framework-{{framework-version}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 8,
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/spec-driver-selenium": {
       "release-type": "node",
       "component": "js/spec-driver-selenium",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"framework-version": 4.4, "node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"framework-version": 4.4, "node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"framework-version": 4.4, "node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"framework-version": 4.4, "node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 4.4,
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 4.4,
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 4.4,
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 4.4,
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/spec-driver-playwright": {
       "release-type": "node",
       "component": "js/spec-driver-playwright",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/spec-driver-puppeteer": {
       "release-type": "node",
       "component": "js/spec-driver-puppeteer",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/spec-driver-browser-extension": {
       "release-type": "node",
       "component": "js/spec-driver-browser-extension",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
-      "tests": [
-        {"artifacts": ["./logs/**/*"], "key": "{{component}}"}
-      ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
+      "tests": [{
+        "key": "{{component}}",
+        "artifacts": ["./logs/**/*"]
+      }],
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/driver": {
       "release-type": "node",
       "component": "js/driver",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/screenshoter": {
       "release-type": "node",
       "component": "js/screenshoter",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"test-type": "it", "artifacts": ["./logs/**/*"], "key": "{{component}}/it"},
-        {"test-type": "e2e:web", "setup-type": "web", "parallel": 15, "artifacts": ["./logs/**/*"], "key": "{{component}}/e2e-web"},
-        {"test-type": "e2e:android", "setup-type": "android", "parallel": 4, "queue": "sauce", "artifacts": ["./logs/**/*"], "key": "{{component}}/e2e-android"},
-        {"test-type": "e2e:ios", "setup-type": "ios", "parallel": 4, "queue": "sauce", "artifacts": ["./logs/**/*"], "key": "{{component}}/e2e-ios"}
+        {
+          "key": "{{component}}/it",
+          "artifacts": ["./logs/**/*"],
+          "test-type": "it"
+        },
+        {
+          "key": "{{component}}/e2e-web",
+          "artifacts": ["./logs/**/*"],
+          "test-type": "e2e:web",
+          "setup-type": "web",
+          "parallel": 15
+        },
+        {
+          "key": "{{component}}/e2e-android",
+          "artifacts": ["./logs/**/*"],
+          "test-type": "e2e:android",
+          "setup-type": "android",
+          "parallel": 4,
+          "semaphore": "sauce"
+        },
+        {
+          "key": "{{component}}/e2e-ios",
+          "artifacts": ["./logs/**/*"],
+          "test-type": "e2e:ios",
+          "setup-type": "ios",
+          "parallel": 4,
+          "semaphore": "sauce"
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/nml-client": {
       "release-type": "node",
       "component": "js/nml-client",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "parallel": 2, "queue": "sauce", "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "parallel": 2, "queue": "sauce", "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "parallel": 2, "queue": "sauce", "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "parallel": 2, "queue": "sauce", "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14,
+          "parallel": 2,
+          "semaphore": "sauce"
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16,
+          "parallel": 2,
+          "semaphore": "sauce"
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18,
+          "parallel": 2,
+          "semaphore": "sauce"
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20,
+          "parallel": 2,
+          "semaphore": "sauce"
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/tunnel-client": {
       "release-type": "node",
       "component": "js/tunnel-client",
       "builds": [
-        {"runner": "linux", "build-type": "x64", "artifacts": ["../*/dist", "../*/types", "./bin"], "key": "{{component}}/{{build-type}}/{{package-version}}/{{hash}}"},
-        {"runner": "linuxarm", "build-type": "arm64", "artifacts": ["../*/dist", "../*/types", "./bin"], "key": "{{component}}/{{build-type}}/{{package-version}}/{{hash}}"}
+        {
+          "key": "{{component}}/{{build-type}}/{{environment}}",
+          "artifacts": ["../*/dist", "../*/types", "./bin"],
+          "runner": "linux",
+          "build-type": "x64"
+        },
+        {
+          "key": "{{component}}/{{build-type}}/{{environment}}",
+          "artifacts": ["../*/dist", "../*/types", "./bin"],
+          "runner": "linuxarm",
+          "build-type": "arm64"
+        }
       ],
       "tests": [
-        {"node-version": 14, "builds": ["{{component}}/x64/{{package-version}}/{{hash}}"], "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "builds": ["{{component}}/x64/{{package-version}}/{{hash}}"], "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "builds": ["{{component}}/x64/{{package-version}}/{{hash}}"], "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "builds": ["{{component}}/x64/{{package-version}}/{{hash}}"], "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14,
+          "builds": ["{{component}}/x64/{{environment}}"]
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16,
+          "builds": ["{{component}}/x64/{{environment}}"]
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18,
+          "builds": ["{{component}}/x64/{{environment}}"]
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20,
+          "builds": ["{{component}}/x64/{{environment}}"]
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org", "jfrog-url": "https://applitools.jfrog.io", "env": {"JF_REPOSITORY": "tunnel-client"}, "artifacts": ["./bin/*"]}
-      ]
+      "releases": [{
+        "artifacts": ["./bin/*"],
+        "jfrog": {"url": "https://applitools.jfrog.io", "repository": "tunnel-client"},
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/ufg-client": {
       "release-type": "node",
       "component": "js/ufg-client",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/execution-grid-client": {
       "release-type": "node",
       "component": "js/ec-client",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/core-base": {
       "release-type": "node",
       "component": "js/core-base",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/core": {
       "release-type": "node",
       "component": "js/core",
       "builds": [
-        {"runner": "linux", "build-type": "x64", "env": {"PUPPETEER_SKIP_DOWNLOAD": true, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": true}, "artifacts": ["../*/dist", "../*/types", "./bin"], "key": "{{component}}/{{build-type}}/{{package-version}}/{{hash}}"},
-        {"runner": "linuxarm", "build-type": "arm64", "env": {"PUPPETEER_SKIP_DOWNLOAD": true, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": true}, "artifacts": ["../*/dist", "../*/types", "./bin"], "key": "{{component}}/{{build-type}}/{{package-version}}/{{hash}}"}
+        {
+          "key": "{{component}}/{{build-type}}/{{environment}}",
+          "artifacts": ["../*/dist", "../*/types", "./bin"],
+          "runner": "linux",
+          "build-type": "x64",
+          "env": {"PUPPETEER_SKIP_DOWNLOAD": true, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": true}
+        },
+        {
+          "key": "{{component}}/{{build-type}}/{{environment}}",
+          "artifacts": ["../*/dist", "../*/types", "./bin"],
+          "runner": "linuxarm",
+          "build-type": "arm64",
+          "env": {"PUPPETEER_SKIP_DOWNLOAD": true, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": true}
+        }
       ],
       "tests": [
-        {"node-version": 14, "test-type": "local", "builds": ["{{component}}/x64/{{package-version}}/{{hash}}"], "report": {"name": "core", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/node-{{node-version}}"},
-        {"node-version": 16, "test-type": "local", "builds": ["{{component}}/x64/{{package-version}}/{{hash}}"], "report": {"name": "core", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/node-{{node-version}}"},
-        {"node-version": 18, "test-type": "local", "builds": ["{{component}}/x64/{{package-version}}/{{hash}}"], "report": {"name": "core", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/node-{{node-version}}"},
-        {"node-version": 20, "test-type": "local", "builds": ["{{component}}/x64/{{package-version}}/{{hash}}"], "report": {"name": "core", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/node-{{node-version}}"},
-        {"test-type": "sauce", "parallel": 2, "queue": "sauce", "builds": ["{{component}}/x64/{{package-version}}/{{hash}}"], "report": {"name": "core", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}"},
-        {"runner": "linux", "test-type": "bin", "setup-type": "none", "env": {"PUPPETEER_SKIP_DOWNLOAD": true, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": true}, "builds": ["{{component}}/x64/{{package-version}}/{{hash}}"], "report": {"name": "core", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/linux"},
-        {"runner": "linuxarm", "test-type": "bin", "setup-type": "none", "env": {"PUPPETEER_SKIP_DOWNLOAD": true, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": true}, "builds": ["{{component}}/arm64/{{package-version}}/{{hash}}"], "report": {"name": "core", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/linuxarm"},
-        {"runner": "linux", "container": "node:lts-alpine", "shell": "ash -eo pipefail {0}", "test-type": "bin", "setup-type": "none", "env": {"PUPPETEER_SKIP_DOWNLOAD": true, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": true}, "builds": ["{{component}}/x64/{{package-version}}/{{hash}}"], "report": {"name": "core", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/alpine"},
-        {"runner": "windows", "test-type": "bin", "setup-type": "none", "env": {"PUPPETEER_SKIP_DOWNLOAD": true, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": true}, "builds": ["{{component}}/x64/{{package-version}}/{{hash}}"], "report": {"name": "core", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/windows"},
-        {"runner": "macos", "test-type": "bin", "setup-type": "none", "env": {"PUPPETEER_SKIP_DOWNLOAD": true, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": true}, "builds": ["{{component}}/x64/{{package-version}}/{{hash}}"], "report": {"name": "core", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/macos"}
+        {
+          "key": "{{component}}/{{test-type}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14,
+          "test-type": "local",
+          "builds": ["{{component}}/x64/{{environment}}"],
+          "report": {"name": "core", "group": "core", "params": {"node": 14}, "result-path": "./logs/report.xml"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16,
+          "test-type": "local",
+          "builds": ["{{component}}/x64/{{environment}}"],
+          "report": {"name": "core", "group": "core", "params": {"node": 16}, "result-path": "./logs/report.xml"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18,
+          "test-type": "local",
+          "builds": ["{{component}}/x64/{{environment}}"],
+          "report": {"name": "core", "group": "core", "params": {"node": 18}, "result-path": "./logs/report.xml"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20,
+          "test-type": "local",
+          "builds": ["{{component}}/x64/{{environment}}"],
+          "report": {"name": "core", "group": "core", "params": {"node": 20}, "result-path": "./logs/report.xml"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}",
+          "artifacts": ["./logs/**/*"],
+          "test-type": "sauce",
+          "parallel": 2,
+          "semaphore": "sauce",
+          "builds": ["{{component}}/x64/{{environment}}"],
+          "report": {"name": "core", "group": "core", "result-path": "./logs/report.xml"}
+        },
+        {
+          "key": "{{component}}/linux",
+          "artifacts": ["./logs/**/*"],
+          "runner": "linux",
+          "test-type": "bin",
+          "setup-type": "none",
+          "env": {"PUPPETEER_SKIP_DOWNLOAD": true, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": true},
+          "builds": ["{{component}}/x64/{{environment}}"],
+          "report": {"name": "core", "group": "core", "params": {"platform": "linux"}, "result-path": "./logs/report.xml"}
+        },
+        {
+          "key": "{{component}}/linuxarm",
+          "artifacts": ["./logs/**/*"],
+          "runner": "linuxarm",
+          "test-type": "bin",
+          "setup-type": "none",
+          "env": {"PUPPETEER_SKIP_DOWNLOAD": true, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": true},
+          "builds": ["{{component}}/arm64/{{environment}}"],
+          "report": {"name": "core", "group": "core", "params": {"platform": "linuxarm"}, "result-path": "./logs/report.xml"}
+        },
+        {
+          "key": "{{component}}/alpine",
+          "artifacts": ["./logs/**/*"],
+          "runner": "linux",
+          "container": "node:lts-alpine",
+          "shell": "ash -eo pipefail {0}",
+          "test-type": "bin",
+          "setup-type": "none",
+          "env": {"PUPPETEER_SKIP_DOWNLOAD": true, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": true},
+          "builds": ["{{component}}/x64/{{environment}}"],
+          "report": {"name": "core", "group": "core", "params": {"platform": "alpine"}, "result-path": "./logs/report.xml"}
+        },
+        {
+          "key": "{{component}}/windows",
+          "artifacts": ["./logs/**/*"],
+          "runner": "windows",
+          "test-type": "bin",
+          "setup-type": "none",
+          "env": {"PUPPETEER_SKIP_DOWNLOAD": true, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": true},
+          "builds": ["{{component}}/x64/{{environment}}"],
+          "report": {"name": "core", "group": "core", "params": {"platform": "windows"}, "result-path": "./logs/report.xml"}
+        },
+        {
+          "key": "{{component}}/macos",
+          "artifacts": ["./logs/**/*"],
+          "runner": "macos",
+          "test-type": "bin",
+          "setup-type": "none",
+          "env": {"PUPPETEER_SKIP_DOWNLOAD": true, "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": true},
+          "builds": ["{{component}}/x64/{{environment}}"],
+          "report": {"name": "core", "group": "core", "params": {"platform": "macos"}, "result-path": "./logs/report.xml"}
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org", "notification": {"name": "core"}, "artifacts": ["./bin/*"]}
-      ]
+      "releases": [{
+        "artifacts": ["./bin/*"],
+        "npm": {"registry-url": "https://registry.npmjs.org"},
+        "notification": {"name": "core"}
+      }]
     },
     "js/packages/eyes-api": {
       "release-type": "node",
       "component": "js/eyes",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/eyes-images": {
       "release-type": "node",
       "component": "js/eyes-images",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "report": {"name": "js_images", "group": "images"}, "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "report": {"name": "js_images", "group": "images"}, "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "report": {"name": "js_images", "group": "images"}, "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "artifacts": ["./logs/**/*"], "report": {"name": "js_images", "group": "images"}, "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14,
+          "report": {"name": "js_images", "group": "images", "params": {"node": 14}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16,
+          "report": {"name": "js_images", "group": "images", "params": {"node": 16}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18,
+          "report": {"name": "js_images", "group": "images", "params": {"node": 18}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20,
+          "report": {"name": "js_images", "group": "images", "params": {"node": 20}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org", "notification": {"name": "js_images"}}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"},
+        "notification": {"name": "js_images"}
+      }]
     },
     "js/packages/eyes-webdriverio-5": {
       "release-type": "node",
       "component": "js/eyes-webdriverio",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "artifacts": ["../*/dist", "../*/types"],
+        "key": "{{component}}/{{environment}}"
+      }],
       "tests": [
-        {"framework-version": 5, "node-version": 14, "test-type": "local", "report": {"name": "js_wdio_5"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/framework-{{framework-version}}/node-{{node-version}}"},
-        {"framework-version": 6, "node-version": 14, "test-type": "local", "report": {"name": "js_wdio_5"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/framework-{{framework-version}}/node-{{node-version}}"},
-        {"framework-version": 7, "node-version": 16, "test-type": "local", "report": {"name": "js_wdio_5"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/framework-{{framework-version}}/node-{{node-version}}"},
-        {"framework-version": 8, "node-version": 18, "test-type": "local", "report": {"name": "js_wdio_5"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/framework-{{framework-version}}/node-{{node-version}}"},
-        {"framework-version": 8, "node-version": 20, "test-type": "local", "report": {"name": "js_wdio_5"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/framework-{{framework-version}}/node-{{node-version}}"},
-        {"framework-version": 8, "test-type": "sauce", "parallel": 2, "queue": "sauce", "report": {"name": "js_wdio_5"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/framework-{{framework-version}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/{{test-type}}/framework-{{framework-version}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 5,
+          "node-version": 14,
+          "test-type": "local",
+          "report": {"name": "js_wdio_5", "params": {"framework": 5, "node": 14}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}/framework-{{framework-version}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 6,
+          "node-version": 14,
+          "test-type": "local",
+          "report": {"name": "js_wdio_5", "params": {"framework": 6, "node": 14}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}/framework-{{framework-version}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 7,
+          "node-version": 16,
+          "test-type": "local",
+          "report": {"name": "js_wdio_5", "params": {"framework": 7, "node": 16}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}/framework-{{framework-version}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 8,
+          "node-version": 18,
+          "test-type": "local",
+          "report": {"name": "js_wdio_5", "params": {"framework": 8, "node": 18}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}/framework-{{framework-version}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 8,
+          "node-version": 20,
+          "test-type": "local",
+          "report": {"name": "js_wdio_5", "params": {"framework": 8, "node": 20}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}/framework-{{framework-version}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 8,
+          "test-type": "sauce",
+          "parallel": 2,
+          "semaphore": "sauce",
+          "report": {"name": "js_wdio_5", "params": {"framework": 8}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org", "notification": {"name": "js_wdio_5"}}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"},
+        "notification": {"name": "js_wdio_5"}
+      }]
     },
     "js/packages/eyes-selenium": {
       "release-type": "node",
       "component": "js/eyes-selenium",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "artifacts": ["../*/dist", "../*/types"],
+        "key": "{{component}}/{{environment}}"
+      }],
       "tests": [
-        {"framework-version": 4.4, "node-version": 14, "test-type": "local", "report": {"name": "js_selenium_4"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/node-{{node-version}}"},
-        {"framework-version": 4.4, "node-version": 16, "test-type": "local", "report": {"name": "js_selenium_4"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/node-{{node-version}}"},
-        {"framework-version": 4.4, "node-version": 18, "test-type": "local", "report": {"name": "js_selenium_4"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/node-{{node-version}}"},
-        {"framework-version": 4.4, "node-version": 20, "test-type": "local", "report": {"name": "js_selenium_4"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/node-{{node-version}}"},
-        {"framework-version": 4.4, "test-type": "sauce", "parallel": 2, "queue": "sauce", "report": {"name": "js_selenium_4"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/{{test-type}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 4.4,
+          "node-version": 14,
+          "test-type": "local",
+          "report": {"name": "js_selenium_4", "params": {"framework": 4, "node": 14}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 4.4,
+          "node-version": 16,
+          "test-type": "local",
+          "report": {"name": "js_selenium_4", "params": {"framework": 4, "node": 16}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 4.4,
+          "node-version": 18,
+          "test-type": "local",
+          "report": {"name": "js_selenium_4", "params": {"framework": 4, "node": 18}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 4.4,
+          "node-version": 20,
+          "test-type": "local",
+          "report": {"name": "js_selenium_4", "params": {"framework": 4, "node": 20}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 4.4,
+          "test-type": "sauce",
+          "parallel": 2,
+          "semaphore": "sauce",
+          "report": {"name": "js_selenium_4", "params": {"framework": 4}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org", "notification": {"name": "js_selenium_4"}}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"},
+        "notification": {"name": "js_selenium_4"}
+      }]
     },
     "js/packages/eyes-nightwatch": {
       "release-type": "node",
       "component": "js/eyes-nightwatch",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "report": {"name": "nightwatch"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "report": {"name": "nightwatch"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "report": {"name": "nightwatch"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "report": {"name": "nightwatch"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14,
+          "report": {"name": "nightwatch", "params": {"node": 14}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16,
+          "report": {"name": "nightwatch", "params": {"node": 16}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18,
+          "report": {"name": "nightwatch", "params": {"node": 18}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20,
+          "report": {"name": "nightwatch", "params": {"node": 20}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org", "notification": {"name": "nightwatch"}}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"},
+        "notification": {"name": "nightwatch"}
+      }]
     },
     "js/packages/eyes-playwright": {
       "release-type": "node",
       "component": "js/eyes-playwright",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "report": {"name": "playwright"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "report": {"name": "playwright"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "report": {"name": "playwright"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "report": {"name": "playwright"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14,
+          "report": {"name": "playwright", "params": {"node": 14}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16,
+          "report": {"name": "playwright", "params": {"node": 16}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18,
+          "report": {"name": "playwright", "params": {"node": 18}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20,
+          "report": {"name": "playwright", "params": {"node": 20}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org", "notification": {"name": "playwright"}}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"},
+        "notification": {"name": "playwright"}
+      }]
     },
     "js/packages/eyes-puppeteer": {
       "release-type": "node",
       "component": "js/eyes-puppeteer",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "report": {"name": "playwright"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "report": {"name": "playwright"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "report": {"name": "playwright"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 20, "report": {"name": "playwright"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14,
+          "report": {"name": "puppeteer", "params": {"node": 14}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16,
+          "report": {"name": "puppeteer", "params": {"node": 16}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18,
+          "report": {"name": "puppeteer", "params": {"node": 18}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 20,
+          "report": {"name": "puppeteer", "params": {"node": 20}, "result-path": "./logs/report.xml", "meta-path": "./logs/meta.json"}
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org", "notification": {"name": "puppeteer"}}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"},
+        "notification": {"name": "puppeteer"}
+      }]
     },
     "js/packages/eyes-browser-extension": {
       "release-type": "node",
       "component": "js/eyes-browser-extension",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types", "./bin"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
-      "tests": [
-        {"artifacts": ["./logs/**/*"], "key": "{{component}}"}
-      ],
-      "releases": [
-        {"artifacts": ["./bin/*"]}
-      ]
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types", "./bin"]
+      }],
+      "tests": [{
+        "key": "{{component}}",
+        "artifacts": ["./logs/**/*"]
+      }],
+      "releases": [{
+        "artifacts": ["./bin/*"]
+      }]
     },
     "js/packages/eyes-storybook": {
       "release-type": "node",
       "component": "js/eyes-storybook",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"artifacts": ["./logs/**/*"], "key": "{{component}}"},
-        {"framework-version": "5.0.0", "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}"},
-        {"framework-version": "5.3.21", "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}"},
-        {"framework-version": "6.3.12", "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}"},
-        {"framework-version": "latest", "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}"},
-        {"framework-version": "next", "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}"}
+        {
+          "key": "{{component}}",
+          "artifacts": ["./logs/**/*"]
+        },
+        {
+          "key": "{{component}}/framework-{{framework-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": "5.0.0"
+        },
+        {
+          "key": "{{component}}/framework-{{framework-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": "5.3.21"
+        },
+        {
+          "key": "{{component}}/framework-{{framework-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": "6.3.12"
+        },
+        {
+          "key": "{{component}}/framework-{{framework-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": "latest"
+        },
+        {
+          "key": "{{component}}/framework-{{framework-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": "next"
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
     "js/packages/eyes-cypress": {
       "release-type": "node",
       "component": "js/eyes-cypress",
-      "builds": [
-        {"artifacts": ["../*/dist", "../*/types"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["../*/dist", "../*/types"]
+      }],
       "tests": [
-        {"node-version": 14, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 16, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"node-version": 18, "artifacts": ["./logs/**/*"], "key": "{{component}}/node-{{node-version}}"},
-        {"framework-version": 8, "node-version": 16, "test-type": "ts:run", "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}"},
-        {"framework-version": 9, "test-type": "ts:run", "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}"},
-        {"framework-version": 10, "test-type": "ts:run", "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}"},
-        {"framework-version": 11, "test-type": "ts:run", "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}"},
-        {"framework-version": 12, "test-type": "ts:run", "artifacts": ["./logs/**/*"], "key": "{{component}}/framework-{{framework-version}}"}
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 14
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16
+        },
+        {
+          "key": "{{component}}/node-{{node-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 18
+        },
+        {
+          "framework-version": 8,
+          "key": "{{component}}/framework-{{framework-version}}",
+          "artifacts": ["./logs/**/*"],
+          "node-version": 16,
+          "test-type": "ts:run"
+        },
+        {
+          "key": "{{component}}/framework-{{framework-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 9,
+          "test-type": "ts:run"
+        },
+        {
+          "key": "{{component}}/framework-{{framework-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 10,
+          "test-type": "ts:run"
+        },
+        {
+          "key": "{{component}}/framework-{{framework-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 11,
+          "test-type": "ts:run"
+        },
+        {
+          "key": "{{component}}/framework-{{framework-version}}",
+          "artifacts": ["./logs/**/*"],
+          "framework-version": 12,
+          "test-type": "ts:run"
+        }
       ],
-      "releases": [
-        {"registry-url": "https://registry.npmjs.org"}
-      ]
+      "releases": [{
+        "npm": {"registry-url": "https://registry.npmjs.org"}
+      }]
     },
-    "java/eyes.sdk.core": {
-      "release-type": "maven",
-      "skip-snapshot": true,
-      "component": "java/eyes-sdk-core-java5",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
-      "tests": [
-        {"report": {"name": "java"}, "artifacts": ["./logs/**/*"], "key": "{{component}}"}
-      ],
-      "releases": [
-        {"profile": "maven"}
-      ]
-    },
-    "java/eyes.common.java": {
-      "release-type": "maven",
-      "skip-snapshot": true,
-      "component": "java/eyes-common-java5",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
-      "releases": [
-        {"profile": "maven"}
-      ]
-    },
-    "java/eyes.connectivity.java": {
-      "release-type": "maven",
-      "skip-snapshot": true,
-      "component": "java/eyes-connectivity-java5",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
-      "releases": [
-        {"profile": "maven"}
-      ]
-    },
-    "java/eyes.selenium.common": {
-      "release-type": "maven",
-      "skip-snapshot": true,
-      "component": "java/eyes-selenium-common-java5",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
-      "releases": [
-        {"profile": "maven"}
-      ]
-    },
-    "java/eyes.ufg.java": {
-      "release-type": "maven",
-      "skip-snapshot": true,
-      "component": "java/eyes-ufg-java5",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
-      "releases": [
-        {"profile": "maven"}
-      ]
-    },
+
     "java/eyes.universal.core/eyes-universal-core": {
       "release-type": "maven",
       "skip-snapshot": true,
       "component": "java/eyes-universal-core",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
-      "releases": [
-        {"profile": "maven"}
-      ]
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "~/.m2/repository"],
+        "builds": ["js/core/x64/{{environment}}", "js/core/arm64/{{environment}}"],
+        "build-type": "maven"
+      }],
+      "releases": [{
+        "profile": "maven"
+      }]
+    },
+    "java/eyes.universal.core/eyes-universal-core-binaries": {
+      "release-type": "maven",
+      "skip-snapshot": true,
+      "component": "java/eyes-universal-core-binaries",
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "./src/main/resources", "~/.m2/repository"],
+        "builds": ["js/core/x64/{{environment}}", "js/core/arm64/{{environment}}"],
+        "build-type": "maven"
+      }],
+      "releases": [{
+        "profile": "maven"
+      }]
     },
     "java/eyes.universal.core/eyes-universal-core-linux": {
       "release-type": "maven",
       "skip-snapshot": true,
       "component": "java/eyes-universal-core-linux",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
-      "tests": [
-        {"runner": "ubuntu-latest", "grep": "TestCoreBinaries#testLinuxBinaries", "report": {"name": "java", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}"}
-      ],
-      "releases": [
-        {"profile": "maven"}
-      ]
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "./src/main/resources", "~/.m2/repository"],
+        "runner": "linux",
+        "builds": ["js/core/x64/{{environment}}"],
+        "build-type": "maven"
+      }],
+      "tests": [{
+        "key": "{{component}}/java-{{java-version}}",
+        "artifacts": ["./reports/**/*"],
+        "runner": "linux",
+        "grep": "TestCoreBinaries#testLinuxBinaries",
+        "builds": ["js/core/x64/{{environment}}"],
+        "report": {"name": "java", "group": "core"}
+      }],
+      "releases": [{
+        "profile": "maven"
+      }]
     },
     "java/eyes.universal.core/eyes-universal-core-arm": {
       "release-type": "maven",
       "skip-snapshot": true,
       "component": "java/eyes-universal-core-arm",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
-      "tests": [
-        {"runner": "linuxarm", "grep": "TestCoreBinaries#testArm64Binaries", "report": {"name": "java", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}"}
-      ],
-      "releases": [
-        {"profile": "maven"}
-      ]
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "./src/main/resources", "~/.m2/repository"],
+        "builds": ["js/core/arm64/{{environment}}"],
+        "build-type": "maven"
+      }],
+      "tests": [{
+        "key": "{{component}}/java-{{java-version}}",
+        "artifacts": ["./reports/**/*"],
+        "runner": "linuxarm",
+        "grep": "TestCoreBinaries#testArm64Binaries",
+        "builds": ["js/core/arm64/{{environment}}"],
+        "report": {"name": "java", "group": "core"}
+      }],
+      "releases": [{
+        "profile": "maven"
+      }]
     },
     "java/eyes.universal.core/eyes-universal-core-alpine": {
       "release-type": "maven",
       "skip-snapshot": true,
       "component": "java/eyes-universal-core-alpine",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "./src/main/resources", "~/.m2/repository"],
+        "builds": ["js/core/x64/{{environment}}"],
+        "build-type": "maven"
+      }],
       "tests": [
-        {"container": "alpine:latest", "grep": "TestCoreBinaries#testAlpineBinaries", "report": {"name": "java", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}"}
+        {
+          "key": "{{component}}/java-{{java-version}}",
+          "artifacts": ["./reports/**/*"],
+          "runner": "linux",
+          "container": "node:lts-alpine",
+          "grep": "TestCoreBinaries#testAlpineBinaries",
+          "builds": ["js/core/x64/{{environment}}"],
+          "report": {"name": "java", "group": "core"}
+        }
       ],
-      "releases": [
-        {"profile": "maven"}
-      ]
+      "releases": [{
+        "profile": "maven"
+      }]
     },
     "java/eyes.universal.core/eyes-universal-core-win": {
       "release-type": "maven",
       "skip-snapshot": true,
       "component": "java/eyes-universal-core-win",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
-      "tests": [
-        {"runner": "windows-latest", "grep": "TestCoreBinaries#testWindowsBinaries", "report": {"name": "java", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}"}
-      ],
-      "releases": [
-        {"profile": "maven"}
-      ]
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "./src/main/resources", "~/.m2/repository"],
+        "builds": ["js/core/x64/{{environment}}"],
+        "build-type": "maven"
+      }],
+      "tests": [{
+        "key": "{{component}}/java-{{java-version}}",
+        "artifacts": ["./reports/**/*"],
+        "runner": "windows",
+        "grep": "TestCoreBinaries#testWindowsBinaries",
+        "builds": ["js/core/x64/{{environment}}"],
+        "report": {"name": "java", "group": "core"}
+      }],
+      "releases": [{
+        "profile": "maven"
+      }]
     },
     "java/eyes.universal.core/eyes-universal-core-mac": {
       "release-type": "maven",
       "skip-snapshot": true,
       "component": "java/eyes-universal-core-mac",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
-      "tests": [
-        {"runner": "macos-latest", "grep": "TestCoreBinaries#testMacosBinaries", "report": {"name": "java", "group": "core"}, "artifacts": ["./logs/**/*"], "key": "{{component}}"}
-      ],
-      "releases": [
-        {"profile": "maven"}
-      ]
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "./src/main/resources", "~/.m2/repository"],
+        "runner": "macos",
+        "builds": ["js/core/x64/{{environment}}", "js/core/arm64/{{environment}}"],
+        "build-type": "maven"
+      }],
+      "tests": [{
+          "key": "{{component}}/java-{{java-version}}",
+          "artifacts": ["./reports/**/*"],
+          "runner": "macos",
+          "grep": "TestCoreBinaries#testMacosBinaries",
+          "builds": ["js/core/x64/{{environment}}"],
+          "report": {"name": "java", "group": "core"}
+        }],
+      "releases": [{
+        "profile": "maven"
+      }]
+    },
+    "java/eyes.sdk.core": {
+      "release-type": "maven",
+      "skip-snapshot": true,
+      "component": "java/eyes-sdk-core-java5",
+      "builds": [{
+          "build-type": "maven",
+          "artifacts": ["./target", "~/.m2/repository"],
+          "key": "{{component}}/{{environment}}",
+          "builds": ["js/core/x64/{{environment}}", "js/core/arm64/{{environment}}"]
+      }],
+      "tests": [{
+          "report": {"name": "java", "format": "raw", "result-path": "./reports/report/*.json"},
+          "artifacts": ["./reports/**/*"],
+          "key": "{{component}}"
+        }],
+      "releases": [{
+          "profile": "maven"
+      }]
+    },
+    "java/eyes.connectivity.java": {
+      "release-type": "maven",
+      "skip-snapshot": true,
+      "component": "java/eyes-connectivity-java5",
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "~/.m2/repository"],
+        "build-type": "maven"
+      }],
+      "releases": [{
+        "profile": "maven"
+      }]
+    },
+    "java/eyes.ufg.java": {
+      "release-type": "maven",
+      "skip-snapshot": true,
+      "component": "java/eyes-ufg-java5",
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "~/.m2/repository"],
+        "build-type": "maven"
+      }],
+      "releases": [{
+        "profile": "maven"
+      }]
+    },
+    "java/eyes.common.java": {
+      "release-type": "maven",
+      "skip-snapshot": true,
+      "component": "java/eyes-common-java5",
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "~/.m2/repository"],
+        "build-type": "maven"
+      }],
+      "releases": [{
+        "profile": "maven"
+      }]
+    },
+    "java/eyes.selenium.common": {
+      "release-type": "maven",
+      "skip-snapshot": true,
+      "component": "java/eyes-selenium-common-java5",
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "~/.m2/repository"],
+        "builds": ["js/core/x64/{{environment}}", "js/core/arm64/{{environment}}"],
+        "build-type": "maven"
+      }],
+      "releases": [{
+        "profile": "maven"
+      }]
     },
     "java/eyes.images.java": {
       "release-type": "maven",
       "skip-snapshot": true,
       "component": "java/eyes-images-java5",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
-      "tests": [
-        {"report": {"name": "java"}, "artifacts": ["./logs/**/*"], "key": "{{component}}"}
-      ],
-      "releases": [
-        {"profile": "maven", "notification": {"name": "java"}}
-      ]
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "~/.m2/repository"],
+        "builds": ["js/core/x64/{{environment}}", "js/core/arm64/{{environment}}"],
+        "build-type": "maven"
+      }],
+      "tests": [{
+        "key": "{{component}}",
+        "artifacts": ["./reports/**/*"],
+        "report": {"name": "java_images", "format": "raw","result-path": "./reports/report/*.json"}
+      }],
+      "releases": [{
+        "profile": "maven",
+        "notification": {"name": "java_images"}
+      }]
     },
     "java/eyes.selenium.java": {
       "release-type": "maven",
       "skip-snapshot": true,
       "component": "java/eyes-selenium-java5",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "~/.m2/repository"],
+        "builds": ["js/core/x64/{{environment}}", "js/core/arm64/{{environment}}"],
+        "build-type": "maven"
+      }],
       "tests": [
-        {"test-type": "unit it e2e", "report": {"name": "java"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}"},
-        {"test-type": "coverage", "report": {"name": "java", "result-path": "../coverage-tests/target/surefire-reports/java_coverage_tests", "meta-path": "../coverage-tests"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}"}
+        {
+          "key": "{{component}}/{{test-type}}",
+          "artifacts": ["./reports/**/*"],
+          "test-type": "unit it e2e",
+          "report": {"name": "java_selenium", "format": "raw", "result-path": "./reports/report/*.json"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}",
+          "artifacts": ["./reports/**/*"],
+          "test-type": "coverage",
+          "report": {"name": "java_selenium", "result-path": "./target/surefire-reports/java_coverage_tests/coverage-test-report.xml", "meta-path": "./coverage-tests-metadata.json"}
+        }
       ],
-      "releases": [
-        {"profile": "maven", "notification": {"name": "java"}}
-      ]
+      "releases": [{
+        "profile": "maven",
+        "notification": {"name": "java_selenium"}
+      }]
     },
     "java/eyes.appium.java": {
       "release-type": "maven",
       "skip-snapshot": true,
       "component": "java/eyes-appium-java5",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "~/.m2/repository"],
+        "builds": ["js/core/x64/{{environment}}", "js/core/arm64/{{environment}}"],
+        "build-type": "maven"
+      }],
       "tests": [
-        {"report": {"name": "java"}, "artifacts": ["./logs/**/*"], "key": "{{component}}"}
+        {
+          "key": "{{component}}/{{test-type}}",
+          "artifacts": ["./reports/**/*"],
+          "test-type": "unit it e2e",
+          "report": {"name": "java_appium", "format": "raw", "result-path": "./reports/report/*.json"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}",
+          "artifacts": ["./reports/**/*"],
+          "test-type": "coverage",
+          "report": {"name": "java_appium", "result-path": "./target/surefire-reports/java_coverage_tests/coverage-test-report.xml", "meta-path": "./coverage-tests-metadata.json"}
+        }
       ],
-      "releases": [
-        {"profile": "maven", "notification": {"name": "java"}}
-      ]
+      "releases": [{
+        "profile": "maven",
+        "notification": {"name": "java_appium"}
+      }]
     },
     "java/eyes.playwright.java": {
       "release-type": "maven",
       "skip-snapshot": true,
       "component": "java/eyes-playwright-java5",
-      "builds": [
-        {"build-type": "maven", "artifacts": ["./target", "/home/runner/.m2/repository"], "key": "{{component}}/{{package-version}}/{{hash}}"}
-      ],
+      "builds": [{
+        "key": "{{component}}/{{environment}}",
+        "artifacts": ["./target", "~/.m2/repository"],
+        "builds": ["js/core/x64/{{environment}}", "js/core/arm64/{{environment}}"],
+        "build-type": "maven"
+      }],
       "tests": [
-        {"test-type": "unit it e2e",  "report": {"name": "java_playwright"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}"},
-        {"test-type": "coverage", "report": {"name": "java_playwright", "result-path": "../coverage-tests/target/surefire-reports/java_coverage_tests", "meta-path": "../coverage-tests"}, "artifacts": ["./logs/**/*"], "key": "{{component}}/{{test-type}}"}
+        {
+          "key": "{{component}}/{{test-type}}",
+          "artifacts": ["./reports/**/*"],
+          "test-type": "unit it e2e",
+          "report": {"name": "java_playwright", "format": "raw", "result-path": "./reports/report/*.json"}
+        },
+        {
+          "key": "{{component}}/{{test-type}}",
+          "artifacts": ["./reports/**/*"],
+          "test-type": "coverage",
+          "report": {"name": "java_playwright", "result-path": "./target/surefire-reports/java_coverage_tests/coverage-test-report.xml", "meta-path": "./coverage-tests-metadata.json"}
+        }
       ],
-      "releases": [
-        {"profile": "maven", "notification": {"name": "java_playwright"}}
-      ]
+      "releases": [{
+        "profile": "maven",
+        "notification": {"name": "java_playwright"}
+      }]
     }
   }
 }

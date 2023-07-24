@@ -1,5 +1,78 @@
 # Changelog
 
+## [1.1.3](https://github.com/applitools/eyes.sdk.javascript1/compare/js/tunnel-client@1.1.2...js/tunnel-client@1.1.3) (2023-07-21)
+
+
+### Bug Fixes
+
+* fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+### Dependencies
+
+* @applitools/logger bumped to 2.0.7
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+* @applitools/req bumped to 1.5.2
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+* @applitools/socket bumped to 1.1.7
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+
+## [1.1.2](https://github.com/applitools/eyes.sdk.javascript1/compare/js/tunnel-client@1.1.1...js/tunnel-client@1.1.2) (2023-07-21)
+
+
+### Code Refactoring
+
+* ufg client ([#1780](https://github.com/applitools/eyes.sdk.javascript1/issues/1780)) ([d60cf16](https://github.com/applitools/eyes.sdk.javascript1/commit/d60cf1616741a96b152a1548760bb98116e5c3f9))
+
+
+### Dependencies
+
+
+
+## [1.1.1](https://github.com/applitools/eyes.sdk.javascript1/compare/js/tunnel-client@1.1.0...js/tunnel-client@1.1.1) (2023-07-18)
+
+
+### Dependencies
+
+* @applitools/req bumped from 1.4.0 to 1.5.0
+  #### Features
+
+  * support retries on stuck requests ([be673bb](https://github.com/applitools/eyes.sdk.javascript1/commit/be673bb505c9b21d6aea37d86e88513e95e3cb02))
+
+## [1.1.0](https://github.com/applitools/eyes.sdk.javascript1/compare/js/tunnel-client@1.0.2...js/tunnel-client@1.1.0) (2023-07-13)
+
+
+### Features
+
+* added internal function to prepare environment before running tunnels ([3d19ec3](https://github.com/applitools/eyes.sdk.javascript1/commit/3d19ec3b274702ffdf26b766b7351ec1f4b66a6d))
+
+
+### Bug Fixes
+
+* prevent tunnel binaries from overriding itself ([5609a36](https://github.com/applitools/eyes.sdk.javascript1/commit/5609a36c93622c9b8eeb4b4ab25f95907df8baa4))
+
+
+### Dependencies
+
+* @applitools/execution-grid-tunnel bumped to 2.1.8
+
+
+## [1.0.2](https://github.com/applitools/eyes.sdk.javascript1/compare/js/tunnel-client@1.0.1...js/tunnel-client@1.0.2) (2023-07-10)
+
+
+### Bug Fixes
+
+* start tunnels with proper regional server ([2a34ed8](https://github.com/applitools/eyes.sdk.javascript1/commit/2a34ed8cd72dc9ac54957348cbe8ba9e67032340))
+
 ## [1.0.1](https://github.com/applitools/eyes.sdk.javascript1/compare/js/tunnel-client@1.0.0...js/tunnel-client@1.0.1) (2023-07-05)
 
 

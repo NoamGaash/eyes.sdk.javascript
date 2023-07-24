@@ -6,7 +6,7 @@ const {generateConfig} = require('../../src/generateConfig');
 const sideEffectConfig = {
   testConcurrency: 5,
   storyDataGap: 10,
-  serverUrl: 'https://eyesapi.applitools.com',
+  eyesServerUrl: undefined,
   viewportSize: {width: 1024, height: 600},
   renderers: [{name: 'chrome', width: 1024, height: 768}],
   saveNewTests: true,
@@ -14,7 +14,7 @@ const sideEffectConfig = {
   fully: true,
 };
 
-describe('generateConfig', function() {
+describe('generateConfig', function () {
   let env;
   beforeEach(() => {
     env = process.env;

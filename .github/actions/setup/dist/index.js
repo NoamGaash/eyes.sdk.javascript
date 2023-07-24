@@ -5259,15 +5259,17 @@ async function main() {
         const [key, value] = env.split('=');
         return { ...envs, [key]: value };
     }, {});
-    const ci = core.getBooleanInput('ci');
-    const tags = core.getMultilineInput('tag').flatMap(tag => tag.split(/[\s\n,]+/));
-    const release = tags.length > 0;
+    const type = core.getInput('type');
+    const ci = type.startsWith('ci');
+    const release = type === 'release';
+    const environment = ['ci-prod', 'release'].includes(type) ? 'prod' : 'dev';
     let input;
     if (ci) {
         input = getChangedPackagesInput();
         core.notice(`Changed packages: "${input}"`);
     }
     else if (release) {
+        const tags = core.getMultilineInput('tag').flatMap(tag => tag.split(/[\s\n,]+/));
         input = getPackagesInputFromTags(tags);
         core.notice(`Release packages: "${input}"`);
     }
@@ -5399,18 +5401,26 @@ async function main() {
                 });
             });
         });
+        const builds = Object.values(jobs.builds).flat().reduce((builds, buildJob) => {
+            if (buildJob.artifacts && buildJob.key) {
+                builds[buildJob.key] = { name: buildJob.name, artifacts: buildJob.artifacts };
+            }
+            return builds;
+        }, {});
         if (ci || release) {
             Object.values(ci ? jobs.tests : jobs.releases).flat().forEach(job => {
-                const defaultBuilds = Object.values(jobs.builds).flat().reduce((builds, buildJob) => {
-                    if (buildJob.name === job.name && buildJob.artifacts && buildJob.key) {
-                        builds[buildJob.key] = buildJob.artifacts;
-                    }
-                    return builds;
-                }, {});
-                const builds = job.builds
-                    ? Object.fromEntries(Object.entries(defaultBuilds).filter(([key]) => job.builds.includes(key)))
-                    : defaultBuilds;
-                job.builds = Object.entries(builds).map(([key, artifacts]) => `${key}$${artifacts.join(';')}`);
+                const jobBuilds = job.builds
+                    ? Object.fromEntries(Object.entries(builds).filter(([key]) => job.builds.includes(key)))
+                    : Object.fromEntries(Object.entries(builds).filter(([, { name }]) => job.name === name));
+                job.builds = Object.entries(jobBuilds).map(([key, { artifacts }]) => `${key}$${artifacts.join(';')}`);
+            });
+        }
+        if (ci) {
+            Object.values(jobs.builds).flat().forEach(job => {
+                if (job.builds) {
+                    const jobBuilds = Object.fromEntries(Object.entries(builds).filter(([key]) => job.builds.includes(key)));
+                    job.builds = Object.entries(jobBuilds).map(([key, { artifacts }]) => `${key}$${artifacts.join(';')}`);
+                }
             });
         }
         return jobs;
@@ -5434,25 +5444,27 @@ async function main() {
                 .flatMap(([key, value]) => value ? `${key}: ${value}` : [])
                 .join(', ');
             job['display-name'] = `${job['display-name'] ?? job.name} ${description ? `(${description})` : ''}`.trim();
-            job.artifacts &&= job.artifacts.map(artifactPath => external_node_path_namespaceObject.join(job['working-directory'], artifactPath));
-            job.key &&= populateString(job.key, { filenamify: type === 'test' });
-            if (type === 'test' || type === 'release') {
-                job.builds &&= job.builds.map(key => populateString(key));
-            }
+            job.artifacts &&= job.artifacts.map(artifactPath => {
+                return (external_node_path_namespaceObject.isAbsolute(artifactPath) || artifactPath.startsWith('~'))
+                    ? artifactPath
+                    : external_node_path_namespaceObject.join(job['working-directory'], artifactPath);
+            });
+            job.key &&= populateString(job.key, { filename: type === 'test', sha: type === 'build' });
+            job.builds &&= job.builds.map(key => populateString(key, { sha: true }));
             return job;
             function populateString(string, options) {
-                let result = string
-                    .replace(/\{\{([^}]+)\}\}/g, (_, name) => {
-                    if (name === 'hash')
-                        return sha;
+                let result = string.replace(/\{\{([^}]+)\}\}/g, (_, name) => {
+                    if (name === 'environment')
+                        return environment;
                     else if (name === 'component')
                         return job.name;
                     else
                         return job[name];
                 });
-                if (options?.filenamify) {
+                if (options?.filename)
                     result = result.replace(/[\/\s]+/g, '-');
-                }
+                if (options?.sha)
+                    result += `#${sha}`;
                 return result;
             }
         }

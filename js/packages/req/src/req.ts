@@ -3,6 +3,7 @@ import type {Options, Hooks, Retry} from './types.js'
 import {AbortController} from 'abort-controller'
 import {stop, type Stop} from './stop.js'
 import {makeAgent} from './agent.js'
+import {AbortCode, RequestTimeoutError, ConnectionTimeoutError} from './req-errors.js'
 import globalFetch, {Request, Headers, Response} from 'node-fetch'
 import * as utils from '@applitools/utils'
 
@@ -23,25 +24,44 @@ export function makeReq<TOptions extends Options = Options, TBaseOptions extends
 
 export async function req(input: string | URL | Request, ...requestOptions: Options[]): Promise<Response> {
   const options = mergeOptions({}, ...requestOptions)
+  let abortCode: string | null
 
   if (options.hooks) options.hooks = utils.types.isArray(options.hooks) ? options.hooks : [options.hooks]
   if (options.retry) options.retry = utils.types.isArray(options.retry) ? options.retry : [options.retry]
   if (options.headers)
     options.headers = Object.fromEntries(Object.entries(options.headers).filter(([_, value]) => value))
 
-  const controller = new AbortController()
-  const timeout = options.timeout ? setTimeout(() => controller.abort(), options.timeout) : null
+  const connectionController = new AbortController()
+  const connectionTimer = options.connectionTimeout
+    ? setTimeout(() => {
+        abortCode = AbortCode.connectionTimeout
+        connectionController.abort()
+      }, options.connectionTimeout)
+    : null
 
   try {
     return await req(input, options)
   } finally {
-    if (timeout) clearTimeout(timeout)
+    if (connectionTimer) clearTimeout(connectionTimer)
   }
 
   async function req(input: string | URL | Request, options: Options): Promise<Response> {
     const fetch = options.fetch ?? globalFetch
 
-    if (options.signal) options.signal.onabort = () => controller.abort()
+    const requestController = new AbortController()
+    const requestTimer = options.requestTimeout
+      ? setTimeout(() => {
+          abortCode ??= AbortCode.requestTimeout
+          requestController.abort()
+        }, options.requestTimeout)
+      : null
+
+    if (connectionController.signal.aborted) requestController.abort()
+    connectionController.signal.onabort = () => requestController.abort()
+    if (options.signal) {
+      if (options.signal.aborted) requestController.abort()
+      options.signal.onabort = () => requestController.abort()
+    }
 
     const url = new URL(String((input as Request).url ?? input), options.baseUrl)
     if (options.query) {
@@ -66,7 +86,7 @@ export async function req(input: string | URL | Request, ...requestOptions: Opti
       body: options.body ?? (input as Request).body,
       highWaterMark: 1024 * 1024 * 100 + 1, // 100MB + 1b
       agent: makeAgent({proxy: options.proxy, useDnsCache: options.useDnsCache}),
-      signal: controller.signal,
+      signal: requestController.signal,
     })
 
     request = await beforeRequest({request, options})
@@ -103,6 +123,8 @@ export async function req(input: string | URL | Request, ...requestOptions: Opti
       response = await afterResponse({request, response, options})
       return response
     } catch (error: any) {
+      if (abortCode === AbortCode.requestTimeout) error = new RequestTimeoutError()
+      else if (abortCode === AbortCode.connectionTimeout) error = new ConnectionTimeoutError()
       // if the request has to be retried due to network error
       const retry = await (options.retry as Retry[])?.reduce((prev, retry) => {
         return prev.then(async result => {
@@ -131,6 +153,7 @@ export async function req(input: string | URL | Request, ...requestOptions: Opti
       throw error
     } finally {
       if (options.signal) options.signal.onabort = null
+      if (requestTimer) clearTimeout(requestTimer)
     }
   }
 }

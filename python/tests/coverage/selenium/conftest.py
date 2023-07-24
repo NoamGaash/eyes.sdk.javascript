@@ -17,7 +17,7 @@ batch_info = BatchInfo(
 @fixture
 def name_of_test(request):
     return "Py{}.{}|Sel{} {}".format(
-        *sys.version_info[:2], selenium.__version__, request.node.name
+        *sys.version_info[:2], selenium.__version__, request.node.name[5:]
     )
 
 
@@ -34,7 +34,10 @@ def driver_builder(chrome):
 @fixture
 def driver(driver_builder):
     yield driver_builder
-    driver_builder.quit()
+    try:
+        driver_builder.quit()
+    except WebDriverException:
+        pass
 
 
 @fixture

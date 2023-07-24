@@ -1,5 +1,6 @@
 import { execSync } from "child_process";
-import { relative } from "path";
+import { relative, resolve } from "path";
+import { XML_NAME, META_NAME } from "./download.js";
 
 export function bongo({ dir, sdk, id, sandbox }) {
   const pathToInputFiles = relative(process.cwd(), dir);
@@ -12,10 +13,8 @@ export function bongo({ dir, sdk, id, sandbox }) {
   execSync(`cat coverage-test-report.xml`, options);
   let command = `npx bongo report --verbose `;
   command += `--reportId ${id} `;
-  if (pathToInputFiles) {
-    command += `--resultPath ${pathToInputFiles} `;
-    command += `--metaPath ${pathToInputFiles} `;
-  }
+  command += `--resultPath ${resolve(pathToInputFiles, XML_NAME)} `;
+  command += `--metaPath ${resolve(pathToInputFiles, META_NAME)} `;
   command += `--name ${sdk} `;
   if (sandbox) command += `--sandbox`;
   // @ts-ignore

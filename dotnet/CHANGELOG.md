@@ -1,3 +1,131 @@
+## [Eyes.Image.Core 3.6.2] - 2023-07-18
+### Updated
+- Server Core to 3.6.2
+
+## [Eyes.Images 3.35] - 2023-07-18
+### Updated
+- Match `DeviceName` enum to devices supported by Server Core.
+
+## [Eyes.Selenium 3.64] - 2023-07-18
+### Updated
+- Match to latest Eyes.Images
+
+## [Eyes.Appium 5.62] - 2023-07-18
+### Updated
+- Match to latest Eyes.Selenium
+
+## [Eyes.Selenium4 3.64] - 2023-07-18
+### Updated
+- Match to latest Eyes.Images
+
+## [Eyes.Playwright 1.12] - 2023-07-18
+### Updated
+- Match to latest Eyes.Images
+
+## [Eyes.Image.Core 3.6.1.1] - 2023-07-14
+### Updated
+- Server Core to 3.6.1
+
+## [Eyes.Images 3.34] - 2023-07-14
+### Updated
+- Match to latest Eyes.Image.Core
+
+## [Eyes.Selenium 3.63] - 2023-07-14
+### Updated
+- Match to latest Eyes.Images
+
+## [Eyes.Appium 5.61] - 2023-07-14
+### Updated
+- Match to latest Eyes.Selenium
+
+## [Eyes.Selenium4 3.63] - 2023-07-14
+### Updated
+- Match to latest Eyes.Images
+
+## [Eyes.Playwright 1.11] - 2023-07-14
+### Updated
+- Match to latest Eyes.Images
+
+## [Eyes.Image.Core 3.6.1.1] - 2023-07-14
+### Updated
+- Server Core to 3.6.1
+
+## [Eyes.Image.Core 3.6.1] - 2023-07-13
+### Updated
+- Server Core to 3.6.1
+
+## [Eyes.Images 3.33] - 2023-07-13
+### Updated
+- Match to latest Eyes.Image.Core
+
+## [Eyes.Selenium 3.62] - 2023-07-13
+### Updated
+- Match to latest Eyes.Images
+
+## [Eyes.Appium 5.60] - 2023-07-13
+### Updated
+- Match to latest Eyes.Selenium
+
+## [Eyes.Selenium4 3.62] - 2023-07-13
+### Updated
+- Match to latest Eyes.Images
+
+## [Eyes.Playwright 1.10] - 2023-07-13
+### Updated
+- Match to latest Eyes.Images
+
+## [Eyes.Appium 5.59] - 2023-07-12
+### Fixed
+- `SetMobileCapabilities` method.
+
+## [Eyes.Appium 5.58] - 2023-07-12
+### Added
+- `SetMobileCapabilities` method.
+
+## [Eyes.Image.Core 3.6.0] - 2023-07-11
+### Updated
+- Server Core to 3.6.0
+
+## [Eyes.Images 3.32] - 2023-07-11
+### Updated
+- Match to latest Eyes.Image.Core
+
+## [Eyes.Selenium 3.61] - 2023-07-11
+### Updated
+- Match to latest Eyes.Images
+
+## [Eyes.Appium 5.57] - 2023-07-11
+### Updated
+- Match to latest Eyes.Selenium
+
+## [Eyes.Selenium4 3.61] - 2023-07-11
+### Updated
+- Match to latest Eyes.Images
+
+## [Eyes.Playwright 1.9] - 2023-07-11
+### Updated
+- Match to latest Eyes.Images
+
+## [Eyes.Images 3.31] - 2023-07-10
+### Fixed
+- Reference to Eyes.Image.Core
+
+## [Eyes.Selenium 3.60] - 2023-07-10
+### Updated
+- Match to latest Eyes.Images
+
+## [Eyes.Appium 5.56] - 2023-07-10
+### Updated
+- Match to latest Eyes.Selenium
+
+## [Eyes.Selenium4 3.60] - 2023-07-10
+### Updated
+- Match to latest Eyes.Images
+
+## [Eyes.Playwright 1.8] - 2023-07-10
+### Updated
+- Match to latest Eyes.Images
+
 ## [Eyes.Images 3.30] - 2023-07-09
 ### Added
 - New emulated devices:

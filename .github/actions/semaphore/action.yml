@@ -1,0 +1,17 @@
+name: Semaphore
+
+inputs:
+  name:
+    description: name of the semaphore
+    type: string
+  max-parallel:
+    description: maximum bandwidth of the semaphore
+    type: number
+  token:
+    description: github access token
+    default: ${{github.token}}
+
+runs:
+  using: node16
+  main: dist/index.js
+  post: dist/index.js

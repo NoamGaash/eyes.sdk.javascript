@@ -1,3 +1,7 @@
+## [5.12.1] - 2023-07-18
+### Fixed
+- Avoid pyyaml versions broken by recent cython major release
+
 ## [5.12.0] - 2023-05-24
 ### Added
 - Get Execution Cloud URL  keyword [Trello 3228](https://trello.com/c/WJDMOddC)

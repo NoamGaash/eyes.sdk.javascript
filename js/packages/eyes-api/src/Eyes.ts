@@ -81,14 +81,14 @@ export class Eyes<TSpec extends Core.SpecType = Core.SpecType> {
     config?: Configuration,
   ): TCapabilities {
     const envs: Record<string, string> = {
-      NML_SERVER_URL: config?.serverUrl ?? utils.general.getEnvValue('SERVER_URL'),
-      NML_API_KEY: config?.apiKey ?? utils.general.getEnvValue('API_KEY'),
+      APPLITOOLS_SERVER_URL: config?.serverUrl ?? utils.general.getEnvValue('SERVER_URL'),
+      APPLITOOLS_API_KEY: config?.apiKey ?? utils.general.getEnvValue('API_KEY'),
     }
     if (config?.proxy) {
       const url = new URL(config.proxy.url)
       if (config.proxy.username) url.username = config.proxy.username
       if (config.proxy.password) url.password = config.proxy.password
-      envs.NML_PROXY_URL = url.toString()
+      envs.APPLITOOLS_PROXY_URL = url.toString()
     }
     return Object.assign(capabilities, {
       'appium:optionalIntentArguments': `--es APPLITOOLS '${JSON.stringify(envs)}'`,
@@ -96,7 +96,7 @@ export class Eyes<TSpec extends Core.SpecType = Core.SpecType> {
         args: [],
         env: {
           DYLD_INSERT_LIBRARIES:
-            '@executable_path/Frameworks/UFG_lib.xcframework/ios-arm64/UFG_lib.framework/UFG_lib:@executable_path/Frameworks/UFG_lib.xcframework/ios-arm64_x86_64-simulator/UFG_lib.framework/UFG_lib',
+            '@executable_path/Frameworks/Applitools_iOS.xcframework/ios-arm64/Applitools_iOS.framework/Applitools_iOS:@executable_path/Frameworks/Applitools_iOS.xcframework/ios-arm64_x86_64-simulator/Applitools_iOS.framework/Applitools_iOS',
           ...envs,
         },
       }),
@@ -315,7 +315,7 @@ export class Eyes<TSpec extends Core.SpecType = Core.SpecType> {
     if (this._config.isDisabled) return null as never
     if (!this.isOpen) throw new EyesError('Eyes not open')
 
-    let serialized: {target?: Image; settings: any}
+    let serialized
     if (utils.types.isString(checkSettingsOrTargetOrName)) {
       serialized = this._driver
         ? new CheckSettingsAutomationFluent(checkSettings as CheckSettingsAutomationFluent<TSpec>, this._spec)
@@ -340,8 +340,14 @@ export class Eyes<TSpec extends Core.SpecType = Core.SpecType> {
     // TODO remove when major version of sdk should be released
     config.screenshot.fully ??= false
 
-    const type =
-      this._runner.type === 'ufg' && settings?.nmgOptions?.nonNMGCheck === 'addToAllDevices' ? 'classic' : undefined
+    let type
+    if (
+      this._runner.type === 'ufg' &&
+      (settings as CheckSettingsAutomation<TSpec>)?.nmgOptions?.nonNMGCheck === 'addToAllDevices'
+    ) {
+      type = 'classic' as const
+      settings.screenshotMode = 'default'
+    }
 
     const [result] = await this._eyes!.check({type, target, settings, config})
 

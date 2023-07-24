@@ -1,5 +1,49 @@
 # Changelog
 
+## [1.1.71](https://github.com/applitools/eyes.sdk.javascript1/compare/js/spec-driver-puppeteer@1.1.70...js/spec-driver-puppeteer@1.1.71) (2023-07-21)
+
+
+### Bug Fixes
+
+* fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+### Dependencies
+
+* @applitools/driver bumped to 1.13.3
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/logger bumped to 2.0.7
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+## [1.1.70](https://github.com/applitools/eyes.sdk.javascript1/compare/js/spec-driver-puppeteer@1.1.69...js/spec-driver-puppeteer@1.1.70) (2023-07-21)
+
+
+### Code Refactoring
+
+* ufg client ([#1780](https://github.com/applitools/eyes.sdk.javascript1/issues/1780)) ([d60cf16](https://github.com/applitools/eyes.sdk.javascript1/commit/d60cf1616741a96b152a1548760bb98116e5c3f9))
+
+
+### Dependencies
+
+
+
+## [1.1.69](https://github.com/applitools/eyes.sdk.javascript1/compare/js/spec-driver-puppeteer@1.1.68...js/spec-driver-puppeteer@1.1.69) (2023-07-13)
+
+
+### Dependencies
+
+* @applitools/driver bumped from 1.13.0 to 1.13.1
+  #### Bug Fixes
+
+  * replaced NML prefixed appium env vars with APPLITOOLS prefixed ([8905b90](https://github.com/applitools/eyes.sdk.javascript1/commit/8905b90e7c4ec6e310f6e52c03bbcc7acf1ff2ab))
+
 ## [1.1.68](https://github.com/applitools/eyes.sdk.javascript1/compare/js/spec-driver-puppeteer@1.1.67...js/spec-driver-puppeteer@1.1.68) (2023-07-05)
 
 

@@ -4,6 +4,183 @@
 
 
 
+## [3.37.4](https://github.com/applitools/eyes.sdk.javascript1/compare/js/eyes-storybook@3.37.3...js/eyes-storybook@3.37.4) (2023-07-21)
+
+
+### Bug Fixes
+
+* fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+### Dependencies
+
+* @applitools/core bumped to 3.6.4
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/core-base bumped to 1.4.3
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/image bumped to 1.1.2
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+* @applitools/logger bumped to 2.0.7
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+* @applitools/req bumped to 1.5.2
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+* @applitools/driver bumped to 1.13.3
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/ec-client bumped to 1.7.3
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/socket bumped to 1.1.7
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/spec-driver-webdriver bumped to 1.0.40
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/tunnel-client bumped to 1.1.3
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/nml-client bumped to 1.5.5
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/spec-driver-webdriverio bumped to 1.5.9
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/screenshoter bumped to 3.8.6
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/ufg-client bumped to 1.5.2
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/spec-driver-puppeteer bumped to 1.1.71
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/spec-driver-selenium bumped to 1.5.54
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+
+## [3.37.3](https://github.com/applitools/eyes.sdk.javascript1/compare/js/eyes-storybook@3.37.2...js/eyes-storybook@3.37.3) (2023-07-21)
+
+
+### Code Refactoring
+
+* ufg client ([#1780](https://github.com/applitools/eyes.sdk.javascript1/issues/1780)) ([d60cf16](https://github.com/applitools/eyes.sdk.javascript1/commit/d60cf1616741a96b152a1548760bb98116e5c3f9))
+
+
+### Dependencies
+
+
+
+## [3.37.2](https://github.com/applitools/eyes.sdk.javascript1/compare/js/eyes-storybook@3.37.1...js/eyes-storybook@3.37.2) (2023-07-18)
+
+
+### Performance Improvements
+
+* additional runtime improvements ([8a33a83](https://github.com/applitools/eyes.sdk.javascript1/commit/8a33a83d4911bdd3bebff646c983d5a2de512763))
+
+## [3.37.1](https://github.com/applitools/eyes.sdk.javascript1/compare/js/eyes-storybook@3.37.0...js/eyes-storybook@3.37.1) (2023-07-18)
+
+
+### Performance Improvements
+
+* improve runtime performance ([#1763](https://github.com/applitools/eyes.sdk.javascript1/issues/1763)) ([3efcc85](https://github.com/applitools/eyes.sdk.javascript1/commit/3efcc85df1d8ec09884bd6bae26758cc4d649f97))
+
+## [3.37.0](https://github.com/applitools/eyes.sdk.javascript1/compare/js/eyes-storybook@3.36.0...js/eyes-storybook@3.37.0) (2023-07-18)
+
+
+### Features
+
+* support retries on stuck requests ([#1773](https://github.com/applitools/eyes.sdk.javascript1/issues/1773)) ([4db470e](https://github.com/applitools/eyes.sdk.javascript1/commit/4db470ee6829c13cfaf7e521ef91e20854266edd))
+
+
+### Bug Fixes
+
+* fix lint config and remove extranous deps ([aea605c](https://github.com/applitools/eyes.sdk.javascript1/commit/aea605c4a1d6cca37d84b464af369cdbff3c6234))
+
+
+### Dependencies
+
+* @applitools/req bumped from 1.4.0 to 1.5.0
+  #### Features
+
+  * support retries on stuck requests ([be673bb](https://github.com/applitools/eyes.sdk.javascript1/commit/be673bb505c9b21d6aea37d86e88513e95e3cb02))
+* @applitools/ufg-client bumped from 1.4.1 to 1.5.0
+  #### Features
+
+  * support retries on stuck requests ([be673bb](https://github.com/applitools/eyes.sdk.javascript1/commit/be673bb505c9b21d6aea37d86e88513e95e3cb02))
+
+
+
+* @applitools/core bumped to 3.6.2
+
+* @applitools/core-base bumped from 1.4.0 to 1.4.1
+
+* @applitools/ec-client bumped from 1.7.0 to 1.7.1
+
+* @applitools/tunnel-client bumped from 1.1.0 to 1.1.1
+
+* @applitools/nml-client bumped from 1.5.2 to 1.5.3
+
+
 ## [3.36.0](https://github.com/applitools/eyes.sdk.javascript1/compare/js/eyes-storybook-v3.35.1...js/eyes-storybook@3.36.0) (2023-07-05)
 
 

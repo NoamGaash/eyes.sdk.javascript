@@ -1,5 +1,147 @@
 # Changelog
 
+## [1.7.3](https://github.com/applitools/eyes.sdk.javascript1/compare/js/ec-client@1.7.2...js/ec-client@1.7.3) (2023-07-21)
+
+
+### Bug Fixes
+
+* fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+### Dependencies
+
+* @applitools/core-base bumped to 1.4.3
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/image bumped to 1.1.2
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+* @applitools/logger bumped to 2.0.7
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+* @applitools/req bumped to 1.5.2
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+* @applitools/driver bumped to 1.13.3
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/socket bumped to 1.1.7
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/spec-driver-webdriver bumped to 1.0.40
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/tunnel-client bumped to 1.1.3
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+
+## [1.7.2](https://github.com/applitools/eyes.sdk.javascript1/compare/js/ec-client@1.7.1...js/ec-client@1.7.2) (2023-07-21)
+
+
+### Code Refactoring
+
+* ufg client ([#1780](https://github.com/applitools/eyes.sdk.javascript1/issues/1780)) ([d60cf16](https://github.com/applitools/eyes.sdk.javascript1/commit/d60cf1616741a96b152a1548760bb98116e5c3f9))
+
+
+### Dependencies
+
+
+
+## [1.7.1](https://github.com/applitools/eyes.sdk.javascript1/compare/js/ec-client@1.7.0...js/ec-client@1.7.1) (2023-07-18)
+
+
+### Dependencies
+
+* @applitools/req bumped from 1.4.0 to 1.5.0
+  #### Features
+
+  * support retries on stuck requests ([be673bb](https://github.com/applitools/eyes.sdk.javascript1/commit/be673bb505c9b21d6aea37d86e88513e95e3cb02))
+* @applitools/core-base bumped from 1.4.0 to 1.4.1
+
+* @applitools/tunnel-client bumped from 1.1.0 to 1.1.1
+
+
+## [1.7.0](https://github.com/applitools/eyes.sdk.javascript1/compare/js/ec-client@1.6.2...js/ec-client@1.7.0) (2023-07-13)
+
+
+### Features
+
+* added internal function to prepare environment before running tunnels ([3d19ec3](https://github.com/applitools/eyes.sdk.javascript1/commit/3d19ec3b274702ffdf26b766b7351ec1f4b66a6d))
+
+
+### Dependencies
+
+* @applitools/driver bumped from 1.13.0 to 1.13.1
+  #### Bug Fixes
+
+  * replaced NML prefixed appium env vars with APPLITOOLS prefixed ([8905b90](https://github.com/applitools/eyes.sdk.javascript1/commit/8905b90e7c4ec6e310f6e52c03bbcc7acf1ff2ab))
+* @applitools/tunnel-client bumped from 1.0.2 to 1.1.0
+  #### Features
+
+  * added internal function to prepare environment before running tunnels ([3d19ec3](https://github.com/applitools/eyes.sdk.javascript1/commit/3d19ec3b274702ffdf26b766b7351ec1f4b66a6d))
+
+
+  #### Bug Fixes
+
+  * prevent tunnel binaries from overriding itself ([5609a36](https://github.com/applitools/eyes.sdk.javascript1/commit/5609a36c93622c9b8eeb4b4ab25f95907df8baa4))
+
+
+
+* @applitools/spec-driver-webdriver bumped from 1.0.37 to 1.0.38
+
+* @applitools/execution-grid-tunnel bumped to 2.1.8
+
+
+## [1.6.2](https://github.com/applitools/eyes.sdk.javascript1/compare/js/ec-client@1.6.1...js/ec-client@1.6.2) (2023-07-10)
+
+
+### Bug Fixes
+
+* fixed issue that caused creation of unnecessary tunnels ([b38fe37](https://github.com/applitools/eyes.sdk.javascript1/commit/b38fe3754f97c5f312ceffd74406255654466ab7))
+* start tunnels with proper regional server ([2a34ed8](https://github.com/applitools/eyes.sdk.javascript1/commit/2a34ed8cd72dc9ac54957348cbe8ba9e67032340))
+
+
+### Dependencies
+
+* @applitools/core-base bumped from 1.3.0 to 1.4.0
+  #### Features
+
+  * support custom property per renderer ([#1715](https://github.com/applitools/eyes.sdk.javascript1/issues/1715)) ([8cf6b1f](https://github.com/applitools/eyes.sdk.javascript1/commit/8cf6b1fb0563b2485ca18eebc2efd236c2287db8))
+
+
+
+* @applitools/image bumped from 1.0.36 to 1.1.0
+  #### Features
+
+  * prevent animated gif images from playing in ufg ([#1721](https://github.com/applitools/eyes.sdk.javascript1/issues/1721)) ([30f39cc](https://github.com/applitools/eyes.sdk.javascript1/commit/30f39cc8ef2cdfa1d85bd7a0037b818db1b52e1b))
+* @applitools/tunnel-client bumped from 1.0.1 to 1.0.2
+  #### Bug Fixes
+
+  * start tunnels with proper regional server ([2a34ed8](https://github.com/applitools/eyes.sdk.javascript1/commit/2a34ed8cd72dc9ac54957348cbe8ba9e67032340))
+
 ## [1.6.1](https://github.com/applitools/eyes.sdk.javascript1/compare/js/ec-client@1.6.0...js/ec-client@1.6.1) (2023-07-05)
 
 

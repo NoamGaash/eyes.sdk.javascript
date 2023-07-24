@@ -2,6 +2,288 @@
 
 ## Unreleased
 
+## [3.6.4](https://github.com/applitools/eyes.sdk.javascript1/compare/js/core@3.6.3...js/core@3.6.4) (2023-07-21)
+
+
+### Bug Fixes
+
+* fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+### Dependencies
+
+* @applitools/core-base bumped to 1.4.3
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/image bumped to 1.1.2
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+* @applitools/logger bumped to 2.0.7
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+* @applitools/req bumped to 1.5.2
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+* @applitools/driver bumped to 1.13.3
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/ec-client bumped to 1.7.3
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/socket bumped to 1.1.7
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/spec-driver-webdriver bumped to 1.0.40
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/tunnel-client bumped to 1.1.3
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/nml-client bumped to 1.5.5
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/spec-driver-webdriverio bumped to 1.5.9
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/screenshoter bumped to 3.8.6
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/ufg-client bumped to 1.5.2
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/spec-driver-puppeteer bumped to 1.1.71
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/spec-driver-selenium bumped to 1.5.54
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+
+## [3.6.3](https://github.com/applitools/eyes.sdk.javascript1/compare/js/core@3.6.2...js/core@3.6.3) (2023-07-21)
+
+
+### Bug Fixes
+
+* improve performance by not resetting the environment ([#1779](https://github.com/applitools/eyes.sdk.javascript1/issues/1779)) ([8178978](https://github.com/applitools/eyes.sdk.javascript1/commit/8178978e9443e60f3e8b10693395e4c80cb9e02f))
+
+
+### Code Refactoring
+
+* ufg client ([#1780](https://github.com/applitools/eyes.sdk.javascript1/issues/1780)) ([d60cf16](https://github.com/applitools/eyes.sdk.javascript1/commit/d60cf1616741a96b152a1548760bb98116e5c3f9))
+
+
+### Dependencies
+
+* @applitools/spec-driver-puppeteer bumped to 1.1.70
+  #### Code Refactoring
+
+  * ufg client ([#1780](https://github.com/applitools/eyes.sdk.javascript1/issues/1780)) ([d60cf16](https://github.com/applitools/eyes.sdk.javascript1/commit/d60cf1616741a96b152a1548760bb98116e5c3f9))
+
+
+
+* @applitools/spec-driver-selenium bumped to 1.5.53
+  #### Code Refactoring
+
+  * ufg client ([#1780](https://github.com/applitools/eyes.sdk.javascript1/issues/1780)) ([d60cf16](https://github.com/applitools/eyes.sdk.javascript1/commit/d60cf1616741a96b152a1548760bb98116e5c3f9))
+
+
+
+* @applitools/spec-driver-webdriverio bumped to 1.5.8
+  #### Code Refactoring
+
+  * ufg client ([#1780](https://github.com/applitools/eyes.sdk.javascript1/issues/1780)) ([d60cf16](https://github.com/applitools/eyes.sdk.javascript1/commit/d60cf1616741a96b152a1548760bb98116e5c3f9))
+
+
+
+* @applitools/tunnel-client bumped to 1.1.2
+  #### Code Refactoring
+
+  * ufg client ([#1780](https://github.com/applitools/eyes.sdk.javascript1/issues/1780)) ([d60cf16](https://github.com/applitools/eyes.sdk.javascript1/commit/d60cf1616741a96b152a1548760bb98116e5c3f9))
+
+
+
+
+## [3.6.2](https://github.com/applitools/eyes.sdk.javascript1/compare/js/core@3.6.1...js/core@3.6.2) (2023-07-18)
+
+
+### Dependencies
+
+* @applitools/req bumped from 1.4.0 to 1.5.0
+  #### Features
+
+  * support retries on stuck requests ([be673bb](https://github.com/applitools/eyes.sdk.javascript1/commit/be673bb505c9b21d6aea37d86e88513e95e3cb02))
+* @applitools/ufg-client bumped from 1.4.1 to 1.5.0
+  #### Features
+
+  * support retries on stuck requests ([be673bb](https://github.com/applitools/eyes.sdk.javascript1/commit/be673bb505c9b21d6aea37d86e88513e95e3cb02))
+
+
+
+* @applitools/core-base bumped from 1.4.0 to 1.4.1
+
+* @applitools/ec-client bumped from 1.7.0 to 1.7.1
+
+* @applitools/tunnel-client bumped from 1.1.0 to 1.1.1
+
+* @applitools/nml-client bumped from 1.5.2 to 1.5.3
+
+
+## [3.6.1](https://github.com/applitools/eyes.sdk.javascript1/compare/js/core@3.6.0...js/core@3.6.1) (2023-07-13)
+
+
+### Bug Fixes
+
+* replaced NML prefixed appium env vars with APPLITOOLS prefixed ([8905b90](https://github.com/applitools/eyes.sdk.javascript1/commit/8905b90e7c4ec6e310f6e52c03bbcc7acf1ff2ab))
+
+
+### Dependencies
+
+* @applitools/driver bumped from 1.13.0 to 1.13.1
+  #### Bug Fixes
+
+  * replaced NML prefixed appium env vars with APPLITOOLS prefixed ([8905b90](https://github.com/applitools/eyes.sdk.javascript1/commit/8905b90e7c4ec6e310f6e52c03bbcc7acf1ff2ab))
+* @applitools/ec-client bumped from 1.6.2 to 1.7.0
+  #### Features
+
+  * added internal function to prepare environment before running tunnels ([3d19ec3](https://github.com/applitools/eyes.sdk.javascript1/commit/3d19ec3b274702ffdf26b766b7351ec1f4b66a6d))
+
+
+
+* @applitools/tunnel-client bumped from 1.0.2 to 1.1.0
+  #### Features
+
+  * added internal function to prepare environment before running tunnels ([3d19ec3](https://github.com/applitools/eyes.sdk.javascript1/commit/3d19ec3b274702ffdf26b766b7351ec1f4b66a6d))
+
+
+  #### Bug Fixes
+
+  * prevent tunnel binaries from overriding itself ([5609a36](https://github.com/applitools/eyes.sdk.javascript1/commit/5609a36c93622c9b8eeb4b4ab25f95907df8baa4))
+
+
+
+* @applitools/nml-client bumped from 1.5.1 to 1.5.2
+  #### Bug Fixes
+
+  * replaced NML prefixed appium env vars with APPLITOOLS prefixed ([8905b90](https://github.com/applitools/eyes.sdk.javascript1/commit/8905b90e7c4ec6e310f6e52c03bbcc7acf1ff2ab))
+
+
+
+* @applitools/ufg-client bumped from 1.4.0 to 1.4.1
+  #### Bug Fixes
+
+  * fixed an issue when an inability to freeze a gif image caused sdk crush ([dca9ead](https://github.com/applitools/eyes.sdk.javascript1/commit/dca9eadd2bab39d1fc20b99d997879075691f0ee))
+  * fixed issue when sdk crushed due to invalid resource url in ufg mode ([8b44958](https://github.com/applitools/eyes.sdk.javascript1/commit/8b449580a930753dd2735befdcdb4c46e184b2a9))
+* @applitools/spec-driver-webdriver bumped from 1.0.37 to 1.0.38
+
+* @applitools/execution-grid-tunnel bumped to 2.1.8
+
+* @applitools/screenshoter bumped from 3.8.3 to 3.8.4
+
+
+## [3.6.0](https://github.com/applitools/eyes.sdk.javascript1/compare/js/core@3.5.1...js/core@3.6.0) (2023-07-10)
+
+
+### Features
+
+* ability to skip deserialize dom snapshot ([#1703](https://github.com/applitools/eyes.sdk.javascript1/issues/1703)) ([a461af4](https://github.com/applitools/eyes.sdk.javascript1/commit/a461af4fb72b7cba1ae15a5d20376fd02e7d9003))
+* prevent animated gif images from playing in ufg ([#1721](https://github.com/applitools/eyes.sdk.javascript1/issues/1721)) ([30f39cc](https://github.com/applitools/eyes.sdk.javascript1/commit/30f39cc8ef2cdfa1d85bd7a0037b818db1b52e1b))
+* support custom property per renderer ([#1715](https://github.com/applitools/eyes.sdk.javascript1/issues/1715)) ([8cf6b1f](https://github.com/applitools/eyes.sdk.javascript1/commit/8cf6b1fb0563b2485ca18eebc2efd236c2287db8))
+
+
+### Dependencies
+
+* @applitools/core-base bumped from 1.3.0 to 1.4.0
+  #### Features
+
+  * support custom property per renderer ([#1715](https://github.com/applitools/eyes.sdk.javascript1/issues/1715)) ([8cf6b1f](https://github.com/applitools/eyes.sdk.javascript1/commit/8cf6b1fb0563b2485ca18eebc2efd236c2287db8))
+
+
+
+* @applitools/image bumped from 1.0.36 to 1.1.0
+  #### Features
+
+  * prevent animated gif images from playing in ufg ([#1721](https://github.com/applitools/eyes.sdk.javascript1/issues/1721)) ([30f39cc](https://github.com/applitools/eyes.sdk.javascript1/commit/30f39cc8ef2cdfa1d85bd7a0037b818db1b52e1b))
+* @applitools/ec-client bumped from 1.6.1 to 1.6.2
+  #### Bug Fixes
+
+  * fixed issue that caused creation of unnecessary tunnels ([b38fe37](https://github.com/applitools/eyes.sdk.javascript1/commit/b38fe3754f97c5f312ceffd74406255654466ab7))
+  * start tunnels with proper regional server ([2a34ed8](https://github.com/applitools/eyes.sdk.javascript1/commit/2a34ed8cd72dc9ac54957348cbe8ba9e67032340))
+
+
+
+* @applitools/tunnel-client bumped from 1.0.1 to 1.0.2
+  #### Bug Fixes
+
+  * start tunnels with proper regional server ([2a34ed8](https://github.com/applitools/eyes.sdk.javascript1/commit/2a34ed8cd72dc9ac54957348cbe8ba9e67032340))
+* @applitools/ufg-client bumped from 1.3.0 to 1.4.0
+  #### Features
+
+  * ability to skip deserialize dom snapshot ([#1703](https://github.com/applitools/eyes.sdk.javascript1/issues/1703)) ([a461af4](https://github.com/applitools/eyes.sdk.javascript1/commit/a461af4fb72b7cba1ae15a5d20376fd02e7d9003))
+  * add support for resource fetching through eg tunnel ([3daa4da](https://github.com/applitools/eyes.sdk.javascript1/commit/3daa4da975cbe23ffb33bb3e9f5f76732ead1075))
+  * added new chrome emulation devices - `Galaxy S21`, `Galaxy S21 Ultra`, and `Galaxy S22 Ultra` ([0dac7f7](https://github.com/applitools/eyes.sdk.javascript1/commit/0dac7f7941558a4e9416f70a104b96d125d38fc7))
+  * prevent animated gif images from playing in ufg ([#1721](https://github.com/applitools/eyes.sdk.javascript1/issues/1721)) ([30f39cc](https://github.com/applitools/eyes.sdk.javascript1/commit/30f39cc8ef2cdfa1d85bd7a0037b818db1b52e1b))
+
+
+  #### Bug Fixes
+
+  * add support for resource fetching through eg tunnel ([a0b98e3](https://github.com/applitools/eyes.sdk.javascript1/commit/a0b98e364cf95bf6bed84c1afe3376384d781717))
+  * add support for resource fetching through eg tunnel ([3daa4da](https://github.com/applitools/eyes.sdk.javascript1/commit/3daa4da975cbe23ffb33bb3e9f5f76732ead1075))
+
+
+
+* @applitools/screenshoter bumped from 3.8.2 to 3.8.3
+
+
 ## [3.5.1](https://github.com/applitools/eyes.sdk.javascript1/compare/js/core@3.5.0...js/core@3.5.1) (2023-07-05)
 
 

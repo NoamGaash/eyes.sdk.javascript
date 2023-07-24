@@ -1,5 +1,49 @@
 # Changelog
 
+## [1.5.54](https://github.com/applitools/eyes.sdk.javascript1/compare/js/spec-driver-selenium@1.5.53...js/spec-driver-selenium@1.5.54) (2023-07-21)
+
+
+### Bug Fixes
+
+* fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+### Dependencies
+
+* @applitools/driver bumped to 1.13.3
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+
+
+* @applitools/logger bumped to 2.0.7
+  #### Bug Fixes
+
+  * fix workspace dependencies ([2a3856f](https://github.com/applitools/eyes.sdk.javascript1/commit/2a3856f3ce3bcf1407f59c676653b6f218556760))
+
+## [1.5.53](https://github.com/applitools/eyes.sdk.javascript1/compare/js/spec-driver-selenium@1.5.52...js/spec-driver-selenium@1.5.53) (2023-07-21)
+
+
+### Code Refactoring
+
+* ufg client ([#1780](https://github.com/applitools/eyes.sdk.javascript1/issues/1780)) ([d60cf16](https://github.com/applitools/eyes.sdk.javascript1/commit/d60cf1616741a96b152a1548760bb98116e5c3f9))
+
+
+### Dependencies
+
+
+
+## [1.5.52](https://github.com/applitools/eyes.sdk.javascript1/compare/js/spec-driver-selenium@1.5.51...js/spec-driver-selenium@1.5.52) (2023-07-13)
+
+
+### Dependencies
+
+* @applitools/driver bumped from 1.13.0 to 1.13.1
+  #### Bug Fixes
+
+  * replaced NML prefixed appium env vars with APPLITOOLS prefixed ([8905b90](https://github.com/applitools/eyes.sdk.javascript1/commit/8905b90e7c4ec6e310f6e52c03bbcc7acf1ff2ab))
+
 ## [1.5.51](https://github.com/applitools/eyes.sdk.javascript1/compare/js/spec-driver-selenium@1.5.50...js/spec-driver-selenium@1.5.51) (2023-07-05)
 
 
