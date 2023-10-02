@@ -106,8 +106,9 @@ function handleUnexpectedResponse(): Hooks<ReqEyesOptions> {
           ? !options.expected.includes(response.status)
           : options.expected !== response.status)
       ) {
+        const requestId = request.headers.get('x-applitools-eyes-client-request-id')
         throw new Error(
-          `Request "${options?.name}" that was sent to the address "[${request.method}]${request.url}" failed due to unexpected status ${response.statusText}(${response.status})`,
+          `Request "${options?.name}" [${requestId}] that was sent to the address "[${request.method}]${request.url}" failed due to unexpected status ${response.statusText}(${response.status})`,
         )
       }
     },
